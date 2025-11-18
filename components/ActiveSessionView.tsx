@@ -1,0 +1,387 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  WorkoutSession, 
+  WorkoutExercise, 
+  ExerciseDefinition, 
+  WorkoutSet, 
+  ExerciseType,
+  MuscleGroup 
+} from '../types';
+import { Plus, Trash2, Check, MoreVertical, Search, X, Clock, Activity } from 'lucide-react';
+
+interface ActiveSessionViewProps {
+  session: WorkoutSession | null;
+  exercises: ExerciseDefinition[];
+  onUpdateSession: (session: WorkoutSession) => void;
+  onFinishSession: () => void;
+  onCancelSession: () => void;
+  onAddCustomExercise: (newExercise: ExerciseDefinition) => void;
+}
+
+const ActiveSessionView: React.FC<ActiveSessionViewProps> = ({ 
+  session, 
+  exercises, 
+  onUpdateSession, 
+  onFinishSession,
+  onCancelSession,
+  onAddCustomExercise
+}) => {
+  const [isExerciseModalOpen, setExerciseModalOpen] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  // New Exercise Form State
+  const [isCreatingExercise, setIsCreatingExercise] = useState(false);
+  const [newExerciseName, setNewExerciseName] = useState("");
+  const [newExerciseType, setNewExerciseType] = useState<ExerciseType>(ExerciseType.WEIGHTED);
+  const [newExerciseMuscle, setNewExerciseMuscle] = useState<MuscleGroup>(MuscleGroup.FULL_BODY);
+
+  // Timer Logic
+  useEffect(() => {
+    if (!session) return;
+    const interval = setInterval(() => {
+      const start = new Date(session.startTime).getTime();
+      const now = new Date().getTime();
+      setElapsedTime(Math.floor((now - start) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [session]);
+
+  const formatTime = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hrs > 0) return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  if (!session) return null;
+
+  const handleAddExercise = (def: ExerciseDefinition) => {
+    const isCardioOrTime = def.type === ExerciseType.CARDIO || def.type === ExerciseType.DURATION;
+    
+    const newExercise: WorkoutExercise = {
+      id: crypto.randomUUID(),
+      exerciseDefinitionId: def.id,
+      sets: [
+        { 
+          id: crypto.randomUUID(), 
+          weight: 0, 
+          reps: isCardioOrTime ? 0 : 10, 
+          durationMinutes: isCardioOrTime ? 10 : 0,
+          completed: false 
+        }
+      ],
+      notes: ''
+    };
+    onUpdateSession({
+      ...session,
+      exercises: [...session.exercises, newExercise]
+    });
+    setExerciseModalOpen(false);
+    setSearchQuery("");
+    setIsCreatingExercise(false);
+  };
+
+  const handleCreateAndAddExercise = () => {
+    if (!newExerciseName.trim()) return;
+    
+    const newDef: ExerciseDefinition = {
+      id: `custom_${crypto.randomUUID()}`,
+      name: newExerciseName,
+      muscleGroup: newExerciseMuscle,
+      type: newExerciseType,
+      isCustom: true
+    };
+    
+    onAddCustomExercise(newDef);
+    handleAddExercise(newDef);
+  };
+
+  const handleAddSet = (exerciseIndex: number) => {
+    const updatedExercises = [...session.exercises];
+    const previousSet = updatedExercises[exerciseIndex].sets[updatedExercises[exerciseIndex].sets.length - 1];
+    
+    updatedExercises[exerciseIndex].sets.push({
+      id: crypto.randomUUID(),
+      weight: previousSet ? previousSet.weight : 0,
+      reps: previousSet ? previousSet.reps : 0,
+      durationMinutes: previousSet ? previousSet.durationMinutes : 0,
+      completed: false
+    });
+    onUpdateSession({ ...session, exercises: updatedExercises });
+  };
+
+  const handleUpdateSet = (exIndex: number, setIndex: number, field: keyof WorkoutSet, value: number | boolean) => {
+    const updatedExercises = [...session.exercises];
+    updatedExercises[exIndex].sets[setIndex] = {
+      ...updatedExercises[exIndex].sets[setIndex],
+      [field]: value
+    };
+    onUpdateSession({ ...session, exercises: updatedExercises });
+  };
+
+  const filteredExercises = exercises.filter(e => 
+    e.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    e.muscleGroup.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="pb-24">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-slate-800 p-4 flex justify-between items-center shadow-md">
+        <div>
+           <h2 className="font-bold text-lg text-white">{session.name}</h2>
+           <div className="text-secondary font-mono text-sm font-medium flex items-center">
+             <Clock size={14} className="mr-1" />
+             {formatTime(elapsedTime)}
+           </div>
+        </div>
+        <button 
+          onClick={onFinishSession}
+          className="bg-secondary text-surface px-5 py-2 rounded-full font-bold text-sm hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-900/20"
+        >
+          Fullfør Økt
+        </button>
+      </div>
+
+      {/* Exercises List */}
+      <div className="p-4 space-y-6">
+        {session.exercises.map((workoutExercise, exIndex) => {
+          const def = exercises.find(e => e.id === workoutExercise.exerciseDefinitionId);
+          if (!def) return null;
+
+          const isCardio = def.type === ExerciseType.CARDIO || def.type === ExerciseType.DURATION;
+          const isBodyweight = def.type === ExerciseType.BODYWEIGHT;
+
+          return (
+            <div key={workoutExercise.id} className="bg-surface rounded-xl overflow-hidden border border-slate-700 shadow-sm">
+              <div className="p-4 bg-slate-800/50 border-b border-slate-700 flex justify-between items-center">
+                <div>
+                  <h3 className="font-bold text-lg text-blue-100">{def.name}</h3>
+                  {workoutExercise.notes && (
+                    <p className="text-xs text-muted mt-1 italic">{workoutExercise.notes}</p>
+                  )}
+                </div>
+                <button className="text-muted hover:text-text p-2">
+                  <MoreVertical size={18} />
+                </button>
+              </div>
+              
+              <div className="p-2">
+                {/* Headers based on type */}
+                <div className="grid grid-cols-10 gap-2 mb-2 px-2 text-[10px] uppercase tracking-wider text-muted font-semibold text-center">
+                  <div className="col-span-1">#</div>
+                  <div className="col-span-3">
+                    {isCardio ? 'Minutter' : 'Kg / Motstand'}
+                  </div>
+                  <div className="col-span-3">
+                    {isCardio ? 'Ferdig?' : 'Reps'}
+                  </div>
+                  <div className="col-span-3"></div>
+                </div>
+                
+                {workoutExercise.sets.map((set, setIndex) => (
+                  <div key={set.id} className={`grid grid-cols-10 gap-2 mb-2 items-center transition-colors rounded-lg p-1 ${set.completed ? 'bg-secondary/10' : ''}`}>
+                    <div className="col-span-1 text-center font-mono text-sm text-muted">{setIndex + 1}</div>
+                    
+                    {/* Input 1: Weight / Duration */}
+                    <div className="col-span-3">
+                      {isCardio ? (
+                         <input 
+                          type="number" 
+                          value={set.durationMinutes || ''} 
+                          placeholder="Min"
+                          onChange={(e) => handleUpdateSet(exIndex, setIndex, 'durationMinutes', parseFloat(e.target.value))}
+                          className="w-full bg-background border border-slate-700 rounded p-2 text-center font-mono focus:border-primary focus:outline-none"
+                        />
+                      ) : (
+                        !isBodyweight && (
+                          <input 
+                            type="number" 
+                            value={set.weight || ''} 
+                            placeholder="Kg"
+                            onChange={(e) => handleUpdateSet(exIndex, setIndex, 'weight', parseFloat(e.target.value))}
+                            className="w-full bg-background border border-slate-700 rounded p-2 text-center font-mono focus:border-primary focus:outline-none"
+                          />
+                        )
+                      )}
+                       {isBodyweight && <div className="text-xs text-center text-muted">-</div>}
+                    </div>
+
+                    {/* Input 2: Reps / Checkbox fallback for Cardio */}
+                    <div className="col-span-3">
+                      {!isCardio ? (
+                        <input 
+                          type="number" 
+                          value={set.reps || ''}
+                          placeholder="0"
+                          onChange={(e) => handleUpdateSet(exIndex, setIndex, 'reps', parseFloat(e.target.value))}
+                          className="w-full bg-background border border-slate-700 rounded p-2 text-center font-mono focus:border-primary focus:outline-none"
+                        />
+                      ) : (
+                         <div className="flex justify-center items-center h-full text-xs text-muted">
+                           {set.durationMinutes ? 'Tid' : '-'}
+                         </div>
+                      )}
+                    </div>
+
+                    {/* Checkbox Button */}
+                    <div className="col-span-3 flex justify-center">
+                       <button 
+                        onClick={() => handleUpdateSet(exIndex, setIndex, 'completed', !set.completed)}
+                        className={`h-10 w-full rounded-lg flex items-center justify-center transition-all ${
+                          set.completed 
+                          ? 'bg-secondary text-white shadow-lg shadow-emerald-900/20 scale-105' 
+                          : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                        }`}
+                       >
+                         {set.completed ? <Check size={20} strokeWidth={3} /> : <Check size={18} />}
+                       </button>
+                    </div>
+                  </div>
+                ))}
+
+                <button 
+                  onClick={() => handleAddSet(exIndex)}
+                  className="w-full py-3 mt-2 flex items-center justify-center text-sm font-semibold text-primary bg-primary/5 hover:bg-primary/10 rounded-lg border border-dashed border-primary/30 transition-colors"
+                >
+                  <Plus size={16} className="mr-2" /> 
+                  {isCardio ? 'Legg til intervall / runde' : 'Legg til sett'}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+
+        <button 
+          onClick={() => setExerciseModalOpen(true)}
+          className="w-full py-4 bg-surface border border-slate-700 hover:border-primary text-text rounded-xl flex flex-col items-center justify-center transition-all shadow-sm"
+        >
+          <Plus size={24} className="mb-2 text-primary" />
+          <span className="font-semibold">Legg til øvelse</span>
+        </button>
+
+        <div className="pt-8 pb-4 flex justify-center">
+           <button 
+             onClick={onCancelSession}
+             className="text-red-500 text-sm font-medium hover:text-red-400 flex items-center opacity-80 hover:opacity-100"
+           >
+             <Trash2 size={14} className="mr-1" /> Avbryt økt
+           </button>
+        </div>
+      </div>
+
+      {/* Add Exercise Modal */}
+      {isExerciseModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-sm flex flex-col">
+          <div className="p-4 border-b border-slate-700 flex items-center gap-3 bg-slate-900">
+             <Search className="text-muted" size={20} />
+             <input 
+              autoFocus={!isCreatingExercise}
+              type="text" 
+              placeholder="Søk etter øvelser..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 bg-transparent outline-none text-lg placeholder:text-slate-600 text-white"
+             />
+             <button onClick={() => { setExerciseModalOpen(false); setIsCreatingExercise(false); }} className="p-2 bg-slate-800 rounded-full text-slate-400">
+               <X size={20} />
+             </button>
+          </div>
+
+          {!isCreatingExercise ? (
+             <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                <button 
+                  onClick={() => setIsCreatingExercise(true)}
+                  className="w-full p-4 mb-4 bg-primary/10 border border-primary/50 rounded-xl flex items-center justify-center text-primary font-bold"
+                >
+                  <Plus size={18} className="mr-2" /> Lag ny øvelse
+                </button>
+
+                {filteredExercises.map(ex => (
+                  <button 
+                   key={ex.id}
+                   onClick={() => handleAddExercise(ex)}
+                   className="w-full text-left p-4 bg-slate-800 rounded-xl border border-slate-700 hover:border-slate-500 flex justify-between items-center group"
+                  >
+                     <div>
+                       <div className="font-semibold text-slate-200 group-hover:text-white transition-colors">{ex.name}</div>
+                       <div className="text-xs text-muted">{ex.muscleGroup} • {ex.type}</div>
+                     </div>
+                     <Plus size={18} className="text-muted group-hover:text-white" />
+                  </button>
+                ))}
+                {filteredExercises.length === 0 && (
+                  <div className="text-center text-muted mt-10">Ingen øvelser funnet.</div>
+                )}
+             </div>
+          ) : (
+            <div className="p-6 space-y-6">
+               <h3 className="text-xl font-bold text-white">Ny egen øvelse</h3>
+               
+               <div>
+                 <label className="block text-xs uppercase text-muted font-bold mb-2">Navn</label>
+                 <input 
+                   className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-white focus:border-primary outline-none"
+                   placeholder="F.eks. Motbakkeløp"
+                   value={newExerciseName}
+                   onChange={(e) => setNewExerciseName(e.target.value)}
+                 />
+               </div>
+
+               <div>
+                 <label className="block text-xs uppercase text-muted font-bold mb-2">Type</label>
+                 <div className="grid grid-cols-2 gap-2">
+                   {Object.values(ExerciseType).map((type) => (
+                     <button
+                       key={type}
+                       onClick={() => setNewExerciseType(type)}
+                       className={`p-3 rounded-lg text-sm font-medium border ${
+                         newExerciseType === type 
+                         ? 'bg-primary/20 border-primary text-primary' 
+                         : 'bg-slate-800 border-slate-700 text-slate-400'
+                       }`}
+                     >
+                       {type}
+                     </button>
+                   ))}
+                 </div>
+               </div>
+
+               <div>
+                 <label className="block text-xs uppercase text-muted font-bold mb-2">Kategori</label>
+                 <select 
+                   value={newExerciseMuscle}
+                   onChange={(e) => setNewExerciseMuscle(e.target.value as MuscleGroup)}
+                   className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-white outline-none"
+                 >
+                   {Object.values(MuscleGroup).map(m => (
+                     <option key={m} value={m}>{m}</option>
+                   ))}
+                 </select>
+               </div>
+
+               <button 
+                 onClick={handleCreateAndAddExercise}
+                 disabled={!newExerciseName}
+                 className="w-full bg-primary disabled:opacity-50 text-white font-bold py-4 rounded-xl mt-4"
+               >
+                 Lagre og legg til
+               </button>
+               
+               <button 
+                 onClick={() => setIsCreatingExercise(false)}
+                 className="w-full text-muted text-sm font-medium py-2"
+               >
+                 Gå tilbake
+               </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ActiveSessionView;

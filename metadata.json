@@ -1,0 +1,5 @@
+{
+  "name": "Treningsappen",
+  "description": "En enkel, mobilfokusert treningslogg for å registrere økter, administrere øvelser og spore fremgang.",
+  "requestFramePermissions": []
+}
