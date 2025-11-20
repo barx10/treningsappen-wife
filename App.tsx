@@ -28,7 +28,7 @@ import ExerciseFormModal from './components/ExerciseFormModal';
 import WelcomeScreen from './components/WelcomeScreen';
 import ProfileView from './components/ProfileView';
 import { getRecommendations, getWeeklyStats } from './utils/fitnessCalculations';
-import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell, Lightbulb, Flame } from 'lucide-react';
+import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell, Lightbulb, Flame, User } from 'lucide-react';
 
 export default function App() {
   // --- State ---
@@ -278,22 +278,21 @@ export default function App() {
   );
 
   const renderExercises = () => {
-    const sortOrder: Record<string, number> = {
-      [ExerciseType.CARDIO]: 0,
-      [ExerciseType.DURATION]: 1, // Grouping Time with Bodyweight/Cardio
-      [ExerciseType.BODYWEIGHT]: 1,
-      [ExerciseType.WEIGHTED]: 2,
-    };
+    // Group exercises by type
+    const cardioExercises = exercises.filter(
+      (e) => e.type === ExerciseType.CARDIO || e.type === ExerciseType.DURATION
+    ).sort((a, b) => a.name.localeCompare(b.name));
 
-    const sortedExercises = [...exercises].sort((a, b) => {
-      const orderA = sortOrder[a.type] ?? 99;
-      const orderB = sortOrder[b.type] ?? 99;
-      if (orderA !== orderB) return orderA - orderB;
-      return a.name.localeCompare(b.name);
-    });
+    const bodyweightExercises = exercises.filter(
+      (e) => e.type === ExerciseType.BODYWEIGHT
+    ).sort((a, b) => a.name.localeCompare(b.name));
+
+    const strengthExercises = exercises.filter(
+      (e) => e.type === ExerciseType.WEIGHTED
+    ).sort((a, b) => a.name.localeCompare(b.name));
 
     return (
-      <div className="p-4 pb-24 space-y-4">
+      <div className="p-4 pb-24 space-y-6">
         <div className="flex justify-between items-center mt-2 mb-4">
           <h1 className="text-2xl font-bold text-white">Øvelser</h1>
           <button
@@ -304,15 +303,62 @@ export default function App() {
           </button>
         </div>
 
-        <div className="space-y-3">
-          {sortedExercises.map(ex => (
-            <ExerciseCard
-              key={ex.id}
-              exercise={ex}
-              onSelect={(exercise) => setViewingExercise(exercise)}
-            />
-          ))}
-        </div>
+        {/* Kondisjon Section */}
+        {cardioExercises.length > 0 && (
+          <section>
+            <h2 className="text-lg font-bold text-orange-400 mb-3 flex items-center">
+              <Flame size={18} className="mr-2" />
+              Kondisjon
+            </h2>
+            <div className="space-y-3">
+              {cardioExercises.map((ex) => (
+                <ExerciseCard
+                  key={ex.id}
+                  exercise={ex}
+                  onSelect={(exercise) => setViewingExercise(exercise)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Kroppsvekt Section */}
+        {bodyweightExercises.length > 0 && (
+          <section>
+            <h2 className="text-lg font-bold text-blue-400 mb-3 flex items-center">
+              <User size={18} className="mr-2" />
+              Kroppsvekt
+            </h2>
+            <div className="space-y-3">
+              {bodyweightExercises.map((ex) => (
+                <ExerciseCard
+                  key={ex.id}
+                  exercise={ex}
+                  onSelect={(exercise) => setViewingExercise(exercise)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Styrke Section */}
+        {strengthExercises.length > 0 && (
+          <section>
+            <h2 className="text-lg font-bold text-emerald-400 mb-3 flex items-center">
+              <Dumbbell size={18} className="mr-2" />
+              Styrke
+            </h2>
+            <div className="space-y-3">
+              {strengthExercises.map((ex) => (
+                <ExerciseCard
+                  key={ex.id}
+                  exercise={ex}
+                  onSelect={(exercise) => setViewingExercise(exercise)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     );
   };
