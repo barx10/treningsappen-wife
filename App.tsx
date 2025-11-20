@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ExerciseDefinition,
   WorkoutSession,
@@ -6,43 +6,57 @@ import {
   WorkoutStatus
 } from './types';
 import {
-  createInitialExercises,
-  createInitialHistory,
-  createSessionA,
-  createSessionB,
   createEmptySession
 } from './utils/initialData';
+import {
+  loadExercises,
+  saveExercises,
+  loadHistory,
+  saveHistory,
+  loadActiveSession,
+  saveActiveSession
+} from './utils/storage';
 import BottomNav from './components/BottomNav';
 import ExerciseCard from './components/ExerciseCard';
 import WorkoutHistoryCard from './components/WorkoutHistoryCard';
 import ActiveSessionView from './components/ActiveSessionView';
 import ExerciseDetailModal from './components/ExerciseDetailModal';
 import ExerciseFormModal from './components/ExerciseFormModal';
-import { TrendingUp, Calendar, Play, Heart, Plus } from 'lucide-react';
-
-const INITIAL_EXERCISES = createInitialExercises();
-const INITIAL_HISTORY = createInitialHistory();
+import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell } from 'lucide-react';
 
 export default function App() {
   // --- State ---
-  const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.HOME);
+  const [activeSession, setActiveSession] = useState<WorkoutSession | null>(loadActiveSession);
+  // Start på ACTIVE_WORKOUT hvis vi har en aktiv økt lagret
+  const [currentScreen, setCurrentScreen] = useState<Screen>(() =>
+    loadActiveSession() ? Screen.ACTIVE_WORKOUT : Screen.HOME
+  );
 
-  const [exercises, setExercises] = useState<ExerciseDefinition[]>(INITIAL_EXERCISES);
-  const [history, setHistory] = useState<WorkoutSession[]>(INITIAL_HISTORY);
-  const [activeSession, setActiveSession] = useState<WorkoutSession | null>(null);
+  const [exercises, setExercises] = useState<ExerciseDefinition[]>(loadExercises);
+  const [history, setHistory] = useState<WorkoutSession[]>(loadHistory);
+
+  // --- Effects for Persistence ---
+  useEffect(() => {
+    saveExercises(exercises);
+  }, [exercises]);
+
+  useEffect(() => {
+    saveHistory(history);
+  }, [history]);
+
+  useEffect(() => {
+    saveActiveSession(activeSession);
+  }, [activeSession]);
 
   // Modals State
   const [viewingExercise, setViewingExercise] = useState<ExerciseDefinition | null>(null);
   const [isCreatingExercise, setIsCreatingExercise] = useState(false);
+  const [exerciseToEdit, setExerciseToEdit] = useState<ExerciseDefinition | undefined>(undefined);
 
   // --- Actions ---
 
-  const handleStartSession = (type: 'A' | 'B' | 'EMPTY') => {
-    let session: WorkoutSession;
-    if (type === 'A') session = createSessionA();
-    else if (type === 'B') session = createSessionB();
-    else session = createEmptySession();
-
+  const handleStartSession = () => {
+    const session = createEmptySession();
     setActiveSession(session);
     setCurrentScreen(Screen.ACTIVE_WORKOUT);
   };
@@ -68,14 +82,31 @@ export default function App() {
     }
   };
 
-  const handleSaveNewExercise = (newExercise: ExerciseDefinition) => {
-    setExercises([newExercise, ...exercises]);
+  const handleSaveExercise = (exercise: ExerciseDefinition) => {
+    if (exerciseToEdit) {
+      // Update existing
+      setExercises(exercises.map(e => e.id === exercise.id ? exercise : e));
+    } else {
+      // Create new
+      setExercises([exercise, ...exercises]);
+    }
     setIsCreatingExercise(false);
+    setExerciseToEdit(undefined);
   };
 
   const handleDeleteExercise = (id: string) => {
     setExercises(exercises.filter(e => e.id !== id));
     setViewingExercise(null);
+  };
+
+  const handleEditExercise = (updatedExercise: ExerciseDefinition) => {
+    setExercises(exercises.map(e => e.id === updatedExercise.id ? updatedExercise : e));
+    setViewingExercise(null); // Close detail modal
+    // Optionally we could keep it open with the new data, but closing is simpler for now
+  };
+
+  const handleDeleteHistory = (sessionId: string) => {
+    setHistory(history.filter(s => s.id !== sessionId));
   };
 
   // --- Views ---
@@ -100,16 +131,39 @@ export default function App() {
           <div className="bg-surface p-4 rounded-xl border border-slate-700">
             <div className="flex items-center space-x-2 text-secondary mb-2">
               <TrendingUp size={18} />
-              <span className="font-bold text-xs uppercase tracking-wide">Aktivitet</span>
+              <span className="font-bold text-xs uppercase tracking-wide">Denne uken</span>
             </div>
-            <div className="text-xl font-bold text-white">God start! <span className="text-2xl">🔥</span></div>
+            <div className="text-2xl font-bold text-white">
+              {(() => {
+                const now = new Date();
+                const day = now.getDay();
+                const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+                const monday = new Date(now.setDate(diff));
+                monday.setHours(0, 0, 0, 0);
+                return history.filter(s => new Date(s.date) >= monday).length;
+              })()}
+              <span className="text-sm text-muted font-normal ml-1">økter</span>
+            </div>
           </div>
           <div className="bg-surface p-4 rounded-xl border border-slate-700">
             <div className="flex items-center space-x-2 text-primary mb-2">
-              <Calendar size={18} />
-              <span className="font-bold text-xs uppercase tracking-wide">Totalt</span>
+              <Dumbbell size={18} />
+              <span className="font-bold text-xs uppercase tracking-wide">Totalt løftet</span>
             </div>
-            <div className="text-2xl font-bold text-white">{history.length} <span className="text-sm text-muted font-normal">økter</span></div>
+            <div className="text-2xl font-bold text-white">
+              {(() => {
+                const volume = history.reduce((total, session) => {
+                  return total + session.exercises.reduce((vol, ex) => {
+                    return vol + ex.sets.reduce((sVol, set) => {
+                      if (!set.completed || !set.weight || !set.reps) return sVol;
+                      return sVol + (set.weight * set.reps);
+                    }, 0);
+                  }, 0);
+                }, 0);
+                return (volume / 1000).toFixed(1);
+              })()}
+              <span className="text-sm text-muted font-normal ml-1">tonn</span>
+            </div>
           </div>
         </div>
 
@@ -117,40 +171,18 @@ export default function App() {
         {!activeSession && (
           <section>
             <h2 className="text-lg font-bold text-white mb-3">Start trening</h2>
-            <div className="grid grid-cols-1 gap-3">
-              <button
-                onClick={() => handleStartSession('A')}
-                className="bg-gradient-to-r from-blue-600 to-blue-500 p-4 rounded-xl flex items-center justify-between hover:scale-[1.02] transition-transform shadow-lg shadow-blue-900/20 group"
-              >
-                <div className="text-left">
-                  <div className="font-bold text-white text-lg group-hover:underline">Økt A</div>
-                  <div className="text-blue-100 text-xs">Knebøy, Benkpress, Roing + Intervall</div>
-                </div>
-                <div className="bg-white/20 p-2 rounded-full">
-                  <Play size={20} fill="currentColor" className="text-white" />
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleStartSession('B')}
-                className="bg-gradient-to-r from-emerald-600 to-emerald-500 p-4 rounded-xl flex items-center justify-between hover:scale-[1.02] transition-transform shadow-lg shadow-emerald-900/20 group"
-              >
-                <div className="text-left">
-                  <div className="font-bold text-white text-lg group-hover:underline">Økt B</div>
-                  <div className="text-emerald-100 text-xs">Markløft, Skulderpress + Trapper</div>
-                </div>
-                <div className="bg-white/20 p-2 rounded-full">
-                  <Play size={20} fill="currentColor" className="text-white" />
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleStartSession('EMPTY')}
-                className="bg-surface border border-slate-700 p-3 rounded-xl text-sm font-medium text-muted hover:bg-slate-800 hover:text-white transition-colors mt-2"
-              >
-                + Start en tom økt (Egentrening)
-              </button>
-            </div>
+            <button
+              onClick={handleStartSession}
+              className="w-full bg-gradient-to-r from-primary to-emerald-600 p-6 rounded-2xl flex items-center justify-between hover:scale-[1.02] transition-transform shadow-lg shadow-primary/20 group"
+            >
+              <div className="text-left">
+                <div className="font-bold text-white text-xl group-hover:underline">Start ny økt</div>
+                <div className="text-emerald-100 text-sm mt-1">Velg øvelser selv og logg fremgang</div>
+              </div>
+              <div className="bg-white/20 p-3 rounded-full">
+                <Play size={28} fill="currentColor" className="text-white" />
+              </div>
+            </button>
           </section>
         )}
 
@@ -159,7 +191,11 @@ export default function App() {
           <div className="space-y-3">
             {recentWorkouts.length > 0 ? (
               recentWorkouts.map(session => (
-                <WorkoutHistoryCard key={session.id} session={session} />
+                <WorkoutHistoryCard
+                  key={session.id}
+                  session={session}
+                  onDelete={handleDeleteHistory}
+                />
               ))
             ) : (
               <div className="p-8 text-center border border-dashed border-slate-700 rounded-xl text-muted">
@@ -176,7 +212,11 @@ export default function App() {
     <div className="p-4 pb-24 space-y-4">
       <h1 className="text-2xl font-bold text-white mb-4 mt-2">Treningshistorikk</h1>
       {history.map(session => (
-        <WorkoutHistoryCard key={session.id} session={session} />
+        <WorkoutHistoryCard
+          key={session.id}
+          session={session}
+          onDelete={handleDeleteHistory}
+        />
       ))}
     </div>
   );
@@ -209,6 +249,7 @@ export default function App() {
     <ActiveSessionView
       session={activeSession}
       exercises={exercises}
+      history={history}
       onUpdateSession={setActiveSession}
       onFinishSession={handleFinishSession}
       onCancelSession={handleCancelSession}
@@ -229,16 +270,25 @@ export default function App() {
       {viewingExercise && (
         <ExerciseDetailModal
           exercise={viewingExercise}
+          history={history}
           onClose={() => setViewingExercise(null)}
           onDelete={handleDeleteExercise}
+          onEdit={(ex) => {
+            setViewingExercise(null);
+            setExerciseToEdit(ex);
+            setIsCreatingExercise(true);
+          }}
         />
       )}
 
-      {/* Create Exercise Modal */}
       {isCreatingExercise && (
         <ExerciseFormModal
-          onSave={handleSaveNewExercise}
-          onClose={() => setIsCreatingExercise(false)}
+          initialExercise={exerciseToEdit}
+          onSave={handleSaveExercise}
+          onClose={() => {
+            setIsCreatingExercise(false);
+            setExerciseToEdit(undefined);
+          }}
         />
       )}
 

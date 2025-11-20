@@ -3,22 +3,23 @@ import { ExerciseDefinition, ExerciseType, MuscleGroup } from '../types';
 import { X, Image as ImageIcon, Save } from 'lucide-react';
 
 interface ExerciseFormModalProps {
+  initialExercise?: ExerciseDefinition;
   onSave: (exercise: ExerciseDefinition) => void;
   onClose: () => void;
 }
 
-const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ onSave, onClose }) => {
-  const [name, setName] = useState('');
-  const [type, setType] = useState<ExerciseType>(ExerciseType.WEIGHTED);
-  const [muscleGroup, setMuscleGroup] = useState<MuscleGroup>(MuscleGroup.FULL_BODY);
-  const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ initialExercise, onSave, onClose }) => {
+  const [name, setName] = useState(initialExercise?.name || '');
+  const [type, setType] = useState<ExerciseType>(initialExercise?.type || ExerciseType.WEIGHTED);
+  const [muscleGroup, setMuscleGroup] = useState<MuscleGroup>(initialExercise?.muscleGroup || MuscleGroup.FULL_BODY);
+  const [description, setDescription] = useState(initialExercise?.description || '');
+  const [imageUrl, setImageUrl] = useState(initialExercise?.imageUrl || '');
 
   const handleSubmit = () => {
     if (!name.trim()) return;
 
-    const newExercise: ExerciseDefinition = {
-      id: `custom_${crypto.randomUUID()}`,
+    const exercise: ExerciseDefinition = {
+      id: initialExercise?.id || `custom_${crypto.randomUUID()}`,
       name,
       type,
       muscleGroup,
@@ -27,21 +28,21 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ onSave, onClose }
       isCustom: true,
     };
 
-    onSave(newExercise);
+    onSave(exercise);
   };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4">
-      <div 
+      <div
         className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       <div className="relative bg-surface w-full max-w-lg rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden border border-slate-700 animate-in slide-in-from-bottom duration-300 max-h-[90vh] flex flex-col">
-        
+
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b border-slate-700 bg-slate-800">
-          <h2 className="text-lg font-bold text-white">Ny Øvelse</h2>
+          <h2 className="text-lg font-bold text-white">{initialExercise ? 'Rediger Øvelse' : 'Ny Øvelse'}</h2>
           <button onClick={onClose} className="text-muted hover:text-white">
             <X size={24} />
           </button>
@@ -49,11 +50,11 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ onSave, onClose }
 
         {/* Scrollable Content */}
         <div className="p-6 space-y-5 overflow-y-auto flex-1">
-          
+
           {/* Name */}
           <div>
             <label className="block text-xs uppercase text-muted font-bold mb-2">Navn på øvelse *</label>
-            <input 
+            <input
               className="w-full bg-background border border-slate-700 rounded-lg p-3 text-white focus:border-primary outline-none"
               placeholder="F.eks. Motbakkeløp"
               value={name}
@@ -70,11 +71,10 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ onSave, onClose }
                 <button
                   key={t}
                   onClick={() => setType(t)}
-                  className={`p-3 rounded-lg text-sm font-medium border transition-colors ${
-                    type === t 
-                    ? 'bg-primary/20 border-primary text-primary' 
+                  className={`p-3 rounded-lg text-sm font-medium border transition-colors ${type === t
+                    ? 'bg-primary/20 border-primary text-primary'
                     : 'bg-background border-slate-700 text-slate-400 hover:bg-slate-700'
-                  }`}
+                    }`}
                 >
                   {t}
                 </button>
@@ -85,7 +85,7 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ onSave, onClose }
           {/* Muscle Group */}
           <div>
             <label className="block text-xs uppercase text-muted font-bold mb-2">Muskelgruppe</label>
-            <select 
+            <select
               value={muscleGroup}
               onChange={(e) => setMuscleGroup(e.target.value as MuscleGroup)}
               className="w-full bg-background border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-primary appearance-none"
@@ -99,7 +99,7 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ onSave, onClose }
           {/* Description */}
           <div>
             <label className="block text-xs uppercase text-muted font-bold mb-2">Beskrivelse / Teknikk</label>
-            <textarea 
+            <textarea
               className="w-full bg-background border border-slate-700 rounded-lg p-3 text-white focus:border-primary outline-none min-h-[80px]"
               placeholder="Kort beskrivelse av hvordan øvelsen utføres..."
               value={description}
@@ -112,8 +112,8 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ onSave, onClose }
             <label className="block text-xs uppercase text-muted font-bold mb-2">Bilde URL (Valgfritt)</label>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                 <ImageIcon size={16} className="absolute left-3 top-3.5 text-muted" />
-                 <input 
+                <ImageIcon size={16} className="absolute left-3 top-3.5 text-muted" />
+                <input
                   className="w-full bg-background border border-slate-700 rounded-lg p-3 pl-10 text-white focus:border-primary outline-none text-sm font-mono"
                   placeholder="https://..."
                   value={imageUrl}
@@ -133,7 +133,7 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ onSave, onClose }
 
         {/* Footer */}
         <div className="p-4 border-t border-slate-700 bg-slate-800">
-          <button 
+          <button
             onClick={handleSubmit}
             disabled={!name.trim()}
             className="w-full bg-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 text-white font-bold py-3 rounded-xl flex items-center justify-center transition-all shadow-lg"
