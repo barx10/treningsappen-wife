@@ -4,7 +4,8 @@ import {
   WorkoutSession,
   Screen,
   WorkoutStatus,
-  ExerciseType
+  ExerciseType,
+  UserProfile
 } from './types';
 import {
   createEmptySession
@@ -17,6 +18,7 @@ import {
   loadActiveSession,
   saveActiveSession
 } from './utils/storage';
+import { loadProfile, saveProfile } from './utils/profileStorage';
 import BottomNav from './components/BottomNav';
 import ExerciseCard from './components/ExerciseCard';
 import WorkoutHistoryCard from './components/WorkoutHistoryCard';
@@ -24,7 +26,9 @@ import ActiveSessionView from './components/ActiveSessionView';
 import ExerciseDetailModal from './components/ExerciseDetailModal';
 import ExerciseFormModal from './components/ExerciseFormModal';
 import WelcomeScreen from './components/WelcomeScreen';
-import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell } from 'lucide-react';
+import ProfileView from './components/ProfileView';
+import { getRecommendations, getWeeklyStats } from './utils/fitnessCalculations';
+import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell, Lightbulb, Flame } from 'lucide-react';
 
 export default function App() {
   // --- State ---
@@ -36,6 +40,7 @@ export default function App() {
 
   const [exercises, setExercises] = useState<ExerciseDefinition[]>(loadExercises);
   const [history, setHistory] = useState<WorkoutSession[]>(loadHistory);
+  const [profile, setProfile] = useState<UserProfile>(loadProfile);
 
   // --- Effects for Persistence ---
   useEffect(() => {
@@ -49,6 +54,10 @@ export default function App() {
   useEffect(() => {
     saveActiveSession(activeSession);
   }, [activeSession]);
+
+  useEffect(() => {
+    saveProfile(profile);
+  }, [profile]);
 
   // Modals State
   const [viewingExercise, setViewingExercise] = useState<ExerciseDefinition | null>(null);
@@ -120,7 +129,7 @@ export default function App() {
       <div className="p-4 pb-24 space-y-6">
         <header className="flex justify-between items-center mb-6 mt-2">
           <div>
-            <h1 className="text-2xl font-bold text-white">Hei!</h1>
+            <h1 className="text-2xl font-bold text-white">Hei {profile.name}!</h1>
             <p className="text-muted text-sm">Klar for en sunnere uke?</p>
           </div>
           <div className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg">
@@ -169,6 +178,47 @@ export default function App() {
           </div>
         </div>
 
+        {/* Personalized Recommendations */}
+        {profile.goal && (
+          <section className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-blue-800/30 rounded-xl p-5">
+            <h2 className="text-lg font-bold text-white mb-3 flex items-center">
+              <Lightbulb size={20} className="mr-2 text-yellow-400" />
+              Anbefalinger for deg
+            </h2>
+            <div className="space-y-2">
+              {getRecommendations(profile, history).map((rec, idx) => (
+                <div key={idx} className="text-sm text-slate-200 flex items-start">
+                  <span className="mr-2 mt-0.5">•</span>
+                  <span>{rec}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Weekly Summary with Calories */}
+        {profile.weight && history.length > 0 && (() => {
+          const weekStats = getWeeklyStats(history);
+          return weekStats.workouts > 0 ? (
+            <section className="bg-gradient-to-br from-orange-900/20 to-red-900/20 border border-orange-800/30 rounded-xl p-5">
+              <h2 className="text-lg font-bold text-white mb-3 flex items-center">
+                <Flame size={20} className="mr-2 text-orange-400" />
+                Denne uken
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Økter</div>
+                  <div className="text-2xl font-bold text-white">{weekStats.workouts}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Minutter</div>
+                  <div className="text-2xl font-bold text-white">{weekStats.totalMinutes}</div>
+                </div>
+              </div>
+            </section>
+          ) : null;
+        })()}
+
         {/* Quick Start Section */}
         {!activeSession && (
           <section>
@@ -196,6 +246,8 @@ export default function App() {
                 <WorkoutHistoryCard
                   key={session.id}
                   session={session}
+                  exercises={exercises}
+                  userWeight={profile.weight}
                   onDelete={handleDeleteHistory}
                 />
               ))
@@ -217,6 +269,8 @@ export default function App() {
         <WorkoutHistoryCard
           key={session.id}
           session={session}
+          exercises={exercises}
+          userWeight={profile.weight}
           onDelete={handleDeleteHistory}
         />
       ))}
@@ -298,6 +352,10 @@ export default function App() {
     );
   };
 
+  const renderProfile = () => (
+    <ProfileView profile={profile} onUpdateProfile={setProfile} />
+  );
+
   const [showSplash, setShowSplash] = useState(true);
 
   if (showSplash) {
@@ -311,6 +369,7 @@ export default function App() {
         {currentScreen === Screen.HISTORY && renderHistory()}
         {currentScreen === Screen.EXERCISES && renderExercises()}
         {currentScreen === Screen.ACTIVE_WORKOUT && renderActiveWorkout()}
+        {currentScreen === Screen.PROFILE && renderProfile()}
       </div>
 
       {/* Exercise Detail Modal (View/Delete) */}

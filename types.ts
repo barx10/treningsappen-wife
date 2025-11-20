@@ -63,5 +63,15 @@ export enum Screen {
   HOME = 'Hjem',
   HISTORY = 'Historikk',
   ACTIVE_WORKOUT = 'Aktiv Økt',
-  EXERCISES = 'Øvelser'
+  EXERCISES = 'Øvelser',
+  PROFILE = 'Profil'
+}
+
+// User Profile
+export interface UserProfile {
+  name: string;
+  age?: number;
+  weight?: number; // kg
+  height?: number; // cm
+  goal?: 'strength' | 'muscle' | 'weight_loss' | 'endurance' | 'general';
 }
