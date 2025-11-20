@@ -22,9 +22,8 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate, hasAct
           <button
             key={item.screen}
             onClick={() => onNavigate(item.screen)}
-            className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${
-              currentScreen === item.screen ? 'text-primary' : 'text-muted hover:text-slate-300'
-            }`}
+            className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${currentScreen === item.screen ? 'text-primary' : 'text-muted hover:text-slate-300'
+              }`}
           >
             <item.icon size={20} strokeWidth={2.5} />
             <span className="text-[10px] font-medium">{item.label}</span>
@@ -34,19 +33,18 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate, hasAct
         {/* Floating Action Button logic for Active Workout */}
         <button
           onClick={() => onNavigate(Screen.ACTIVE_WORKOUT)}
-          className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${
-            currentScreen === Screen.ACTIVE_WORKOUT ? 'text-secondary' : 'text-muted hover:text-slate-300'
-          }`}
+          className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${currentScreen === Screen.ACTIVE_WORKOUT ? 'text-secondary' : 'text-muted hover:text-slate-300'
+            }`}
         >
-           <div className={`relative ${hasActiveWorkout ? 'animate-pulse text-secondary' : ''}`}>
-              <PlayCircle size={hasActiveWorkout ? 24 : 20} strokeWidth={2.5} />
-              {hasActiveWorkout && (
-                <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-              )}
-           </div>
-           <span className={`text-[10px] font-medium ${hasActiveWorkout ? 'text-secondary font-bold' : ''}`}>
-             {hasActiveWorkout ? 'Fortsett' : 'Start'}
-           </span>
+          <div className={`relative ${hasActiveWorkout ? 'animate-pulse text-secondary' : ''}`}>
+            <PlayCircle size={hasActiveWorkout ? 24 : 20} strokeWidth={2.5} />
+            {hasActiveWorkout && (
+              <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+            )}
+          </div>
+          <span className={`text-[10px] font-medium ${hasActiveWorkout ? 'text-secondary font-bold' : ''}`}>
+            {hasActiveWorkout ? 'Fortsett' : 'Økt'}
+          </span>
         </button>
       </div>
     </div>

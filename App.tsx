@@ -3,7 +3,8 @@ import {
   ExerciseDefinition,
   WorkoutSession,
   Screen,
-  WorkoutStatus
+  WorkoutStatus,
+  ExerciseType
 } from './types';
 import {
   createEmptySession
@@ -22,6 +23,7 @@ import WorkoutHistoryCard from './components/WorkoutHistoryCard';
 import ActiveSessionView from './components/ActiveSessionView';
 import ExerciseDetailModal from './components/ExerciseDetailModal';
 import ExerciseFormModal from './components/ExerciseFormModal';
+import WelcomeScreen from './components/WelcomeScreen';
 import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell } from 'lucide-react';
 
 export default function App() {
@@ -221,41 +223,86 @@ export default function App() {
     </div>
   );
 
-  const renderExercises = () => (
-    <div className="p-4 pb-24 space-y-4">
-      <div className="flex justify-between items-center mt-2 mb-4">
-        <h1 className="text-2xl font-bold text-white">Øvelser</h1>
-        <button
-          onClick={() => setIsCreatingExercise(true)}
-          className="bg-primary text-white p-2 rounded-full shadow-lg hover:scale-105 transition-transform"
-        >
-          <Plus size={24} />
-        </button>
-      </div>
+  const renderExercises = () => {
+    const sortOrder: Record<string, number> = {
+      [ExerciseType.CARDIO]: 0,
+      [ExerciseType.DURATION]: 1, // Grouping Time with Bodyweight/Cardio
+      [ExerciseType.BODYWEIGHT]: 1,
+      [ExerciseType.WEIGHTED]: 2,
+    };
 
-      <div className="space-y-3">
-        {exercises.map(ex => (
-          <ExerciseCard
-            key={ex.id}
-            exercise={ex}
-            onSelect={(exercise) => setViewingExercise(exercise)}
-          />
-        ))}
-      </div>
-    </div>
-  );
+    const sortedExercises = [...exercises].sort((a, b) => {
+      const orderA = sortOrder[a.type] ?? 99;
+      const orderB = sortOrder[b.type] ?? 99;
+      if (orderA !== orderB) return orderA - orderB;
+      return a.name.localeCompare(b.name);
+    });
 
-  const renderActiveWorkout = () => (
-    <ActiveSessionView
-      session={activeSession}
-      exercises={exercises}
-      history={history}
-      onUpdateSession={setActiveSession}
-      onFinishSession={handleFinishSession}
-      onCancelSession={handleCancelSession}
-      onRequestCreateExercise={() => setIsCreatingExercise(true)}
-    />
-  );
+    return (
+      <div className="p-4 pb-24 space-y-4">
+        <div className="flex justify-between items-center mt-2 mb-4">
+          <h1 className="text-2xl font-bold text-white">Øvelser</h1>
+          <button
+            onClick={() => setIsCreatingExercise(true)}
+            className="bg-primary text-white p-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+          >
+            <Plus size={24} />
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {sortedExercises.map(ex => (
+            <ExerciseCard
+              key={ex.id}
+              exercise={ex}
+              onSelect={(exercise) => setViewingExercise(exercise)}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderActiveWorkout = () => {
+    if (!activeSession) {
+      return (
+        <div className="h-full flex flex-col items-center justify-center p-8 text-center space-y-6">
+          <div className="bg-slate-800 p-6 rounded-full mb-4">
+            <Dumbbell size={48} className="text-muted" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white mb-2">Ingen aktiv økt</h2>
+            <p className="text-muted">Du har ikke startet en treningsøkt enda.</p>
+          </div>
+          <button
+            onClick={handleStartSession}
+            className="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-transform flex items-center"
+          >
+            <Play size={20} className="mr-2" fill="currentColor" />
+            Start ny økt
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <ActiveSessionView
+        session={activeSession}
+        exercises={exercises}
+        history={history}
+        onUpdateSession={setActiveSession}
+        onFinishSession={handleFinishSession}
+        onCancelSession={handleCancelSession}
+        onRequestCreateExercise={() => setIsCreatingExercise(true)}
+      />
+    );
+  };
+
+  const [showSplash, setShowSplash] = useState(true);
+
+  if (showSplash) {
+    return <WelcomeScreen onEnter={() => setShowSplash(false)} />;
+  }
 
   return (
     <div className="h-screen w-full max-w-md mx-auto bg-background relative shadow-2xl font-sans overflow-hidden">
