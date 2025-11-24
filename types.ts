@@ -76,3 +76,10 @@ export interface UserProfile {
   gender?: 'male' | 'female';
   goal?: 'strength' | 'muscle' | 'weight_loss' | 'endurance' | 'general';
 }
+
+export interface BackupData {
+  profile: UserProfile;
+  exercises: ExerciseDefinition[];
+  history: WorkoutSession[];
+  activeSession: WorkoutSession | null;
+}

@@ -1,10 +1,12 @@
 import { UserProfile } from '../types';
+import { STORAGE_KEYS } from './storageKeys';
 
-const PROFILE_KEY = 'treningsappen_user_profile';
+const hasStorage = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
 
 export const loadProfile = (): UserProfile => {
+    if (!hasStorage()) return { name: 'Kenneth' };
     try {
-        const stored = localStorage.getItem(PROFILE_KEY);
+        const stored = window.localStorage.getItem(STORAGE_KEYS.PROFILE);
         if (stored) {
             return JSON.parse(stored);
         }
@@ -15,8 +17,9 @@ export const loadProfile = (): UserProfile => {
 };
 
 export const saveProfile = (profile: UserProfile): void => {
+    if (!hasStorage()) return;
     try {
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+        window.localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
     } catch (error) {
         console.error('Failed to save profile:', error);
     }

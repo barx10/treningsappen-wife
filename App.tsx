@@ -5,7 +5,8 @@ import {
   Screen,
   WorkoutStatus,
   ExerciseType,
-  UserProfile
+  UserProfile,
+  BackupData
 } from './types';
 import {
   createEmptySession
@@ -118,6 +119,22 @@ export default function App() {
 
   const handleDeleteHistory = (sessionId: string) => {
     setHistory(history.filter(s => s.id !== sessionId));
+  };
+
+  const handleImportData = (data: Partial<BackupData>) => {
+    if (data.profile) {
+      setProfile(data.profile);
+    }
+    if (data.exercises) {
+      setExercises(data.exercises);
+    }
+    if (data.history) {
+      setHistory(data.history);
+    }
+    if ('activeSession' in data) {
+      setActiveSession(data.activeSession ?? null);
+    }
+    setCurrentScreen(Screen.HOME);
   };
 
   // --- Views ---
@@ -415,6 +432,8 @@ export default function App() {
       onUpdateProfile={setProfile}
       history={history}
       exercises={exercises}
+      activeSession={activeSession}
+      onImportData={handleImportData}
     />
   );
 

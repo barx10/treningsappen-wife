@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserProfile, WorkoutSession, ExerciseDefinition } from '../types';
+import { UserProfile, WorkoutSession, ExerciseDefinition, BackupData } from '../types';
 import { User, Target, TrendingUp, Save, Dumbbell, Trophy, Download, Upload, X } from 'lucide-react';
 import { getStrengthStandard } from '../utils/fitnessCalculations';
 
@@ -8,9 +8,11 @@ interface ProfileViewProps {
     onUpdateProfile: (profile: UserProfile) => void;
     history?: WorkoutSession[];
     exercises?: ExerciseDefinition[];
+    activeSession?: WorkoutSession | null;
+    onImportData?: (data: Partial<BackupData>) => void;
 }
 
-const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile, history, exercises }) => {
+const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile, history, exercises, activeSession, onImportData }) => {
     const [name, setName] = useState(profile.name || '');
     const [age, setAge] = useState(profile.age?.toString() || '');
     const [weight, setWeight] = useState(profile.weight?.toString() || '');
@@ -159,10 +161,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile, his
     ];
 
     const handleExport = () => {
-        const data = {
+        const data: Partial<BackupData> & { exportDate: string } = {
             profile,
-            exercises,
-            history,
+            exercises: exercises ?? [],
+            history: history ?? [],
+            activeSession: activeSession ?? null,
             exportDate: new Date().toISOString()
         };
 
@@ -184,22 +187,32 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile, his
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
-                const data = JSON.parse(e.target?.result as string);
+                const data = JSON.parse(e.target?.result as string) as Partial<BackupData>;
 
-                if (confirm('Dette vil overskrive all eksisterende data. Er du sikker?')) {
-                    // Import to localStorage
-                    if (data.profile) localStorage.setItem('userProfile', JSON.stringify(data.profile));
-                    if (data.exercises) localStorage.setItem('exercises', JSON.stringify(data.exercises));
-                    if (data.history) localStorage.setItem('history', JSON.stringify(data.history));
+                if (!data.profile && !data.exercises && !data.history) {
+                    alert('Filen inneholder ingen kjente treningsdata.');
+                    return;
+                }
 
-                    alert('Data importert! Refresh siden for å se endringene.');
-                    window.location.reload();
+                if (confirm('Dette vil overskrive eksisterende data i appen. Vil du fortsette?')) {
+                    if (onImportData) {
+                        onImportData({
+                            profile: data.profile,
+                            exercises: data.exercises,
+                            history: data.history,
+                            activeSession: 'activeSession' in data ? data.activeSession ?? null : undefined
+                        });
+                        alert('Data importert!');
+                    } else {
+                        alert('Import-støtte er ikke tilgjengelig akkurat nå.');
+                    }
                 }
             } catch (error) {
                 alert('Feil ved import av data. Sjekk at filen er gyldig.');
             }
         };
         reader.readAsText(file);
+        event.target.value = '';
     };
 
     return (

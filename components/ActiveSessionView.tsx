@@ -6,7 +6,7 @@ import {
   WorkoutSet,
   ExerciseType
 } from '../types';
-import { Plus, Trash2, Check, MoreVertical, Search, X, Clock } from 'lucide-react';
+import { Plus, Trash2, Check, Search, X, Clock } from 'lucide-react';
 import RestTimer from './RestTimer';
 
 interface ActiveSessionViewProps {
@@ -118,6 +118,31 @@ const ActiveSessionView: React.FC<ActiveSessionViewProps> = ({
     onUpdateSession({ ...session, exercises: updatedExercises });
   };
 
+  const removeExercise = (exerciseId: string, shouldConfirm = true) => {
+    if (shouldConfirm && !confirm('Fjern denne øvelsen fra økten?')) return;
+    onUpdateSession({
+      ...session,
+      exercises: session.exercises.filter(ex => ex.id !== exerciseId)
+    });
+  };
+
+  const handleRemoveSet = (exerciseIndex: number, setIndex: number) => {
+    const updatedExercises = [...session.exercises];
+    const targetExercise = updatedExercises[exerciseIndex];
+    if (!targetExercise) return;
+
+    if (targetExercise.sets.length === 1) {
+      if (confirm('Dette er siste sett. Vil du fjerne hele øvelsen?')) {
+        removeExercise(targetExercise.id, false);
+      }
+      return;
+    }
+
+    targetExercise.sets = targetExercise.sets.filter((_, idx) => idx !== setIndex);
+    updatedExercises[exerciseIndex] = targetExercise;
+    onUpdateSession({ ...session, exercises: updatedExercises });
+  };
+
   const handleUpdateSet = (exIndex: number, setIndex: number, field: keyof WorkoutSet, value: number | boolean) => {
     const updatedExercises = [...session.exercises];
     updatedExercises[exIndex].sets[setIndex] = {
@@ -176,8 +201,12 @@ const ActiveSessionView: React.FC<ActiveSessionViewProps> = ({
                     <p className="text-xs text-muted mt-1 italic">{workoutExercise.notes}</p>
                   )}
                 </div>
-                <button className="text-muted hover:text-text p-2">
-                  <MoreVertical size={18} />
+                <button
+                  className="text-red-400 hover:text-red-200 p-2 rounded-lg hover:bg-red-500/10 transition-colors"
+                  onClick={() => removeExercise(workoutExercise.id)}
+                  aria-label="Fjern øvelse"
+                >
+                  <Trash2 size={16} />
                 </button>
               </div>
 
@@ -240,15 +269,22 @@ const ActiveSessionView: React.FC<ActiveSessionViewProps> = ({
                     </div>
 
                     {/* Checkbox Button */}
-                    <div className="col-span-3 flex justify-center">
+                    <div className="col-span-3 flex justify-center gap-2">
                       <button
                         onClick={() => handleUpdateSet(exIndex, setIndex, 'completed', !set.completed)}
-                        className={`h-10 w-full rounded-lg flex items-center justify-center transition-all ${set.completed
+                        className={`h-10 flex-1 rounded-lg flex items-center justify-center transition-all ${set.completed
                           ? 'bg-secondary text-white shadow-lg shadow-emerald-900/20 scale-105'
                           : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                           }`}
                       >
                         {set.completed ? <Check size={20} strokeWidth={3} /> : <Check size={18} />}
+                      </button>
+                      <button
+                        onClick={() => handleRemoveSet(exIndex, setIndex)}
+                        className="h-10 w-10 rounded-lg flex items-center justify-center bg-slate-800 text-slate-400 hover:text-red-300 hover:bg-red-900/20 transition-colors"
+                        aria-label="Slett sett"
+                      >
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </div>
