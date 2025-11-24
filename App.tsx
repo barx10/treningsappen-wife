@@ -410,7 +410,12 @@ export default function App() {
   };
 
   const renderProfile = () => (
-    <ProfileView profile={profile} onUpdateProfile={setProfile} />
+    <ProfileView
+      profile={profile}
+      onUpdateProfile={setProfile}
+      history={history}
+      exercises={exercises}
+    />
   );
 
   const [showSplash, setShowSplash] = useState(true);

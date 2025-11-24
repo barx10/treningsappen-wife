@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { UserProfile } from '../types';
-import { User, Target, TrendingUp, Save } from 'lucide-react';
+import { UserProfile, WorkoutSession, ExerciseDefinition } from '../types';
+import { User, Target, TrendingUp, Save, Dumbbell, Trophy } from 'lucide-react';
+import { getStrengthStandard } from '../utils/fitnessCalculations';
 
 interface ProfileViewProps {
     profile: UserProfile;
     onUpdateProfile: (profile: UserProfile) => void;
+    history?: WorkoutSession[];
+    exercises?: ExerciseDefinition[];
 }
 
-const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile }) => {
+const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile, history, exercises }) => {
     const [name, setName] = useState(profile.name || '');
     const [age, setAge] = useState(profile.age?.toString() || '');
     const [weight, setWeight] = useState(profile.weight?.toString() || '');
@@ -37,6 +40,35 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile }) =
     const bmi = profile.height && profile.weight
         ? (profile.weight / Math.pow(profile.height / 100, 2)).toFixed(1)
         : null;
+
+    // Helper to find max weight for an exercise
+    const getMaxWeight = (exerciseName: string): number => {
+        if (!history || !exercises) return 0;
+
+        // Find definition ID
+        const def = exercises.find(e => e.name === exerciseName);
+        if (!def) return 0;
+
+        let max = 0;
+        history.forEach(session => {
+            const exData = session.exercises.find(e => e.exerciseDefinitionId === def.id);
+            if (exData) {
+                exData.sets.forEach(set => {
+                    if (set.completed && set.weight && set.weight > max) {
+                        max = set.weight;
+                    }
+                });
+            }
+        });
+        return max;
+    };
+
+    const strengthExercises = [
+        'Knebøy / Goblet Squat',
+        'Markløft (KB/Stang)',
+        'Benkpress',
+        'Skulderpress'
+    ];
 
     return (
         <div className="p-4 pb-24 space-y-6">
@@ -115,8 +147,8 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile }) =
                             key={option.value}
                             onClick={() => setGoal(option.value)}
                             className={`w-full p-4 rounded-lg border-2 transition-all text-left flex items-center justify-between ${goal === option.value
-                                    ? 'border-primary bg-primary/10 text-white'
-                                    : 'border-slate-700 bg-slate-800/50 text-slate-300 hover:border-slate-600'
+                                ? 'border-primary bg-primary/10 text-white'
+                                : 'border-slate-700 bg-slate-800/50 text-slate-300 hover:border-slate-600'
                                 }`}
                         >
                             <span className="font-medium">{option.label}</span>
@@ -144,6 +176,56 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile }) =
                                 {parseFloat(bmi) >= 30 && 'Fedme'}
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Strength Standards Section */}
+            {profile.weight && history && exercises && (
+                <div className="bg-surface rounded-xl border border-slate-700 p-5 space-y-4">
+                    <h2 className="text-lg font-bold text-white flex items-center">
+                        <Trophy size={18} className="mr-2 text-yellow-500" />
+                        Styrkestandarder
+                    </h2>
+                    <p className="text-xs text-muted">Basert på din kroppsvekt ({profile.weight}kg)</p>
+
+                    <div className="space-y-4">
+                        {strengthExercises.map(exName => {
+                            const maxWeight = getMaxWeight(exName);
+                            if (maxWeight === 0) return null;
+
+                            const standard = getStrengthStandard(exName, maxWeight, profile.weight);
+                            if (!standard) return null;
+
+                            return (
+                                <div key={exName} className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/50">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-sm font-medium text-slate-200">{exName}</span>
+                                        <span className="text-sm font-bold text-white">{maxWeight} kg</span>
+                                    </div>
+
+                                    <div className="relative h-2 bg-slate-700 rounded-full overflow-hidden mb-1">
+                                        <div
+                                            className={`absolute top-0 left-0 h-full rounded-full ${standard.level === 'Avansert' ? 'bg-purple-500' :
+                                                    standard.level === 'Middels' ? 'bg-emerald-500' :
+                                                        standard.level === 'Nybegynner+' ? 'bg-blue-500' :
+                                                            'bg-slate-500'
+                                                }`}
+                                            style={{ width: `${standard.percentile}%` }}
+                                        />
+                                    </div>
+                                    <div className="flex justify-between text-[10px] text-muted uppercase tracking-wider">
+                                        <span>Nivå: <span className="text-slate-300">{standard.level}</span></span>
+                                        <span>{standard.percentile}%</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        {strengthExercises.every(exName => getMaxWeight(exName) === 0) && (
+                            <div className="text-sm text-muted italic text-center py-2">
+                                Logg noen økter med baseøvelser for å se din styrkeprofil!
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
