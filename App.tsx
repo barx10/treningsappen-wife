@@ -160,7 +160,7 @@ export default function App() {
                   <span className="font-bold text-[10px] uppercase tracking-wide">Kcal</span>
                 </div>
                 <div className="text-xl font-bold text-white">
-                  {weekStats.totalCalories}
+                  {weekStats.totalCalories || 0}
                   <span className="text-xs text-muted font-normal ml-1"></span>
                 </div>
               </div>
