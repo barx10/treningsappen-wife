@@ -67,9 +67,11 @@ export const getRecommendations = (
     const sessionsThisWeek = history.filter((session) => new Date(session.date) >= startOfWeek);
     const sortedHistory = [...history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     const lastSession = sortedHistory[0];
-    const yesterdaySession = sortedHistory.find((session) =>
-        Math.abs(new Date(session.date).getTime() - now.getTime()) <= 24 * 60 * 60 * 1000
-    );
+    const yesterdaySession = sortedHistory.find((session) => {
+        const sessionDate = new Date(session.date);
+        const diffMs = now.getTime() - sessionDate.getTime();
+        return diffMs > 0 && diffMs <= 24 * 60 * 60 * 1000;
+    });
 
     const muscleCounts: Record<string, number> = {};
     let cardioSessions = 0;
@@ -117,26 +119,54 @@ export const getRecommendations = (
         return `${names[0]} eller ${names[1]}`;
     };
 
-    const complementaryFocus = (trained: MuscleGroup[]) => {
-        if (trained.some((m) => m === MuscleGroup.LEGS)) {
-            return [MuscleGroup.BACK, MuscleGroup.CHEST];
+    const priorityGroups: MuscleGroup[] = [
+        MuscleGroup.LEGS,
+        MuscleGroup.BACK,
+        MuscleGroup.CHEST,
+        MuscleGroup.SHOULDERS,
+        MuscleGroup.CORE,
+        MuscleGroup.ARMS
+    ];
+
+    const pickFocusGroups = (trainedYesterday: MuscleGroup[]) => {
+        const result: MuscleGroup[] = [];
+        const trainedSet = new Set(trainedYesterday);
+
+        const addIfValid = (group: MuscleGroup) => {
+            if (!result.includes(group)) {
+                result.push(group);
+            }
+        };
+
+        // 1. Prioriter muskelgrupper som ikke er trent denne uken
+        priorityGroups.forEach((group) => {
+            if (!muscleCounts[group] && !trainedSet.has(group)) {
+                addIfValid(group);
+            }
+        });
+
+        // 2. Deretter grupper som ikke ble trent i går
+        if (result.length < 2) {
+            priorityGroups.forEach((group) => {
+                if (!trainedSet.has(group)) {
+                    addIfValid(group);
+                }
+            });
         }
-        if (trained.some((m) => m === MuscleGroup.CHEST || m === MuscleGroup.SHOULDERS)) {
-            return [MuscleGroup.BACK, MuscleGroup.LEGS];
+
+        // 3. Til slutt de gruppene med lavest volum denne uken
+        if (result.length < 2) {
+            const sortedByVolume = [...priorityGroups].sort((a, b) => (muscleCounts[a] || 0) - (muscleCounts[b] || 0));
+            sortedByVolume.forEach((group) => addIfValid(group));
         }
-        if (trained.some((m) => m === MuscleGroup.BACK)) {
-            return [MuscleGroup.CHEST, MuscleGroup.LEGS];
-        }
-        if (trained.some((m) => m === MuscleGroup.CARDIO || m === MuscleGroup.FULL_BODY)) {
-            return [MuscleGroup.LEGS, MuscleGroup.CHEST];
-        }
-        return [MuscleGroup.FULL_BODY, MuscleGroup.CARDIO];
+
+        return result.slice(0, 2);
     };
 
     if (yesterdaySession) {
         const muscles = getSessionMuscles(yesterdaySession);
         if (muscles.length) {
-            const focus = complementaryFocus(muscles);
+            const focus = pickFocusGroups(muscles);
             const exerciseExamples = sampleExerciseNames(focus);
             const focusText = formatMuscles(focus);
             const exampleText = exerciseExamples ? ` – prøv ${exerciseExamples}` : '';
@@ -147,19 +177,7 @@ export const getRecommendations = (
         recommendations.push(`🌟 Forrige økt dekket ${formatMuscles(muscles)}. Planlegg neste økt i morgen for å holde flyten.`);
     }
 
-    const goalTargets: Record<NonNullable<UserProfile['goal']>, number> = {
-        strength: 3,
-        muscle: 4,
-        weight_loss: 4,
-        endurance: 4,
-        general: 3
-    };
-
     const goal = profile.goal || 'general';
-    const weeklyTarget = goalTargets[goal];
-    if (sessionsThisWeek.length < weeklyTarget) {
-        recommendations.push(`📅 Du er på ${sessionsThisWeek.length}/${weeklyTarget} økter denne uken. Sett av tid til neste økt allerede nå.`);
-    }
 
     if ((goal === 'weight_loss' || goal === 'endurance') && cardioSessions < 2) {
         const example = sampleExerciseNames([MuscleGroup.CARDIO]) || 'en rask gåtur';
