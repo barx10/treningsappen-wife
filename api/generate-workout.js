@@ -14,8 +14,16 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  console.log('API handler started');
+
   try {
     const { profile, weekHistory, availableExercises } = req.body;
+    
+    console.log('Request data:', { 
+      profileGoal: profile?.goal,
+      historyCount: weekHistory?.length,
+      exercisesCount: availableExercises?.length 
+    });
     
     // Validate API key
     if (!process.env.GEMINI_API_KEY) {
@@ -23,6 +31,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'API key not configured' });
     }
 
+    console.log('Initializing GoogleGenAI...');
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
     const prompt = `Du er en personlig treningscoach. Lag et detaljert treningsopplegg basert på følgende:
@@ -65,6 +74,7 @@ Returner et JSON-objekt med følgende struktur (BARE JSON, ingen annen tekst):
   "reasoning": "Kort forklaring på hvorfor dette opplegget passer nå (2-3 setninger)"
 }`;
 
+    console.log('Calling Gemini API...');
     const result = await ai.models.generateContent({
       model: 'gemini-2.0-flash-001',
       contents: { parts: [{ text: prompt }] },
@@ -73,7 +83,9 @@ Returner et JSON-objekt med følgende struktur (BARE JSON, ingen annen tekst):
       }
     });
 
+    console.log('Gemini API response received');
     const workout = JSON.parse(result.text);
+    console.log('Workout parsed successfully');
     
     res.status(200).json(workout);
   } catch (error) {
