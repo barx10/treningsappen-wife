@@ -110,13 +110,10 @@ export const getRecommendations = (
         return `${lower.slice(0, -1).join(', ')} og ${lower[lower.length - 1]}`;
     };
 
-    const sampleExerciseNames = (groups: MuscleGroup[]) => {
-        const names = groups
-            .map((group) => exercises.find((ex) => ex.muscleGroup === group)?.name)
-            .filter(Boolean) as string[];
-        if (!names.length) return '';
-        if (names.length === 1) return names[0];
-        return `${names[0]} eller ${names[1]}`;
+    const pickExercisesForGroup = (group: MuscleGroup, count: number = 2): string[] => {
+        const matching = exercises.filter((ex) => ex.muscleGroup === group);
+        const shuffled = [...matching].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, count).map((ex) => ex.name);
     };
 
     const priorityGroups: MuscleGroup[] = [
@@ -128,7 +125,7 @@ export const getRecommendations = (
         MuscleGroup.ARMS
     ];
 
-    const pickFocusGroups = (trainedYesterday: MuscleGroup[]) => {
+    const pickFocusGroups = (trainedYesterday: MuscleGroup[], targetCount: number = 3): MuscleGroup[] => {
         const result: MuscleGroup[] = [];
         const trainedSet = new Set(trainedYesterday);
 
@@ -146,7 +143,7 @@ export const getRecommendations = (
         });
 
         // 2. Deretter grupper som ikke ble trent i går
-        if (result.length < 2) {
+        if (result.length < targetCount) {
             priorityGroups.forEach((group) => {
                 if (!trainedSet.has(group)) {
                     addIfValid(group);
@@ -155,51 +152,56 @@ export const getRecommendations = (
         }
 
         // 3. Til slutt de gruppene med lavest volum denne uken
-        if (result.length < 2) {
+        if (result.length < targetCount) {
             const sortedByVolume = [...priorityGroups].sort((a, b) => (muscleCounts[a] || 0) - (muscleCounts[b] || 0));
             sortedByVolume.forEach((group) => addIfValid(group));
         }
 
-        return result.slice(0, 2);
+        return result.slice(0, targetCount);
     };
 
-    if (yesterdaySession) {
-        const muscles = getSessionMuscles(yesterdaySession);
-        if (muscles.length) {
-            const focus = pickFocusGroups(muscles);
-            const exerciseExamples = sampleExerciseNames(focus);
-            const focusText = formatMuscles(focus);
-            const exampleText = exerciseExamples ? ` – prøv ${exerciseExamples}` : '';
-            recommendations.push(`🔄 I går trente du ${formatMuscles(muscles)}. I dag passer ${focusText}${exampleText}.`);
-        }
-    } else if (lastSession) {
-        const muscles = getSessionMuscles(lastSession);
-        const focus = pickFocusGroups(muscles);
-        if (focus.length > 0) {
-            const exerciseExamples = sampleExerciseNames(focus);
-            const focusText = formatMuscles(focus);
-            const exampleText = exerciseExamples ? ` som ${exerciseExamples}` : '';
-            recommendations.push(`💡 Du trente ${formatMuscles(muscles)} forrige gang. Hva med ${focusText}${exampleText} neste gang?`);
+    if (yesterdaySession || lastSession) {
+        const muscles = getSessionMuscles(yesterdaySession || lastSession);
+        const focusGroups = pickFocusGroups(muscles, 3);
+        
+        if (focusGroups.length > 0) {
+            const exerciseSuggestions: string[] = [];
+            focusGroups.forEach((group) => {
+                const exNames = pickExercisesForGroup(group, 2);
+                exerciseSuggestions.push(...exNames);
+            });
+
+            const firstFive = exerciseSuggestions.slice(0, 5);
+            if (firstFive.length > 0) {
+                const intro = yesterdaySession 
+                    ? `🔄 I går trente du ${formatMuscles(muscles)}.`
+                    : `💡 Du trente ${formatMuscles(muscles)} forrige gang.`;
+                const suggestion = `Prøv ${firstFive.join(', ')} i neste økt.`;
+                recommendations.push(`${intro} ${suggestion}`);
+            }
         }
     }
 
     const goal = profile.goal || 'general';
 
     if ((goal === 'weight_loss' || goal === 'endurance') && cardioSessions < 2) {
-        const example = sampleExerciseNames([MuscleGroup.CARDIO]) || 'en rask gåtur';
-        recommendations.push(`🏃 Få opp pulsen denne uken – legg inn en kondisjonsøkt som ${example}.`);
+        const cardioExamples = pickExercisesForGroup(MuscleGroup.CARDIO, 2);
+        const example = cardioExamples.length > 0 ? cardioExamples.join(' eller ') : 'en rask gåtur';
+        recommendations.push(`🏃 Få opp pulsen denne uken – legg inn ${example}.`);
     }
 
     if ((goal === 'strength' || goal === 'muscle') && !muscleCounts[MuscleGroup.LEGS]) {
-        const legExample = sampleExerciseNames([MuscleGroup.LEGS]) || 'knebøy';
-        recommendations.push(`🦵 Ingen beintrening så langt – legg inn ${legExample} for å holde balansen.`);
+        const legExamples = pickExercisesForGroup(MuscleGroup.LEGS, 2);
+        const example = legExamples.length > 0 ? legExamples.join(' eller ') : 'knebøy';
+        recommendations.push(`🦵 Ingen beintrening så langt – legg inn ${example}.`);
     }
 
     const pushVolume = (muscleCounts[MuscleGroup.CHEST] || 0) + (muscleCounts[MuscleGroup.SHOULDERS] || 0);
     const pullVolume = muscleCounts[MuscleGroup.BACK] || 0;
     if (pushVolume >= pullVolume + 2) {
-        const backExample = sampleExerciseNames([MuscleGroup.BACK]) || 'roing';
-        recommendations.push(`⚖️ Mye press denne uken – gi ryggen kjærlighet med ${backExample}.`);
+        const backExamples = pickExercisesForGroup(MuscleGroup.BACK, 2);
+        const example = backExamples.length > 0 ? backExamples.join(' eller ') : 'roing';
+        recommendations.push(`⚖️ Mye press denne uken – gi ryggen kjærlighet med ${example}.`);
     }
 
     const consecutive = sortedHistory.slice(0, 2);

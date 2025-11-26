@@ -69,6 +69,30 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Hoftehev'
   },
   {
+    id: 'ex_bulgarian_split',
+    name: 'Bulgarian Split Squat',
+    muscleGroup: MuscleGroup.LEGS,
+    type: ExerciseType.WEIGHTED,
+    description: 'Stå foran en benk. Plasser den ene foten bakover på benken. Senk kroppen ved å bøye det fremre beinet til kneet nesten berører gulvet. Press opp igjen.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Bulgarian+Split'
+  },
+  {
+    id: 'ex_leg_curl',
+    name: 'Leg Curl',
+    muscleGroup: MuscleGroup.LEGS,
+    type: ExerciseType.WEIGHTED,
+    description: 'Ligg på magen i leg curl-maskinen. Bøy knærne for å trekke vekten opp mot setet. Senk kontrollert ned.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Leg+Curl'
+  },
+  {
+    id: 'ex_calf_raise',
+    name: 'Calf Raises',
+    muscleGroup: MuscleGroup.LEGS,
+    type: ExerciseType.WEIGHTED,
+    description: 'Stå med tærne på en forhøyning. Løft hælene opp så høyt du kan. Senk kontrollert ned igjen.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Calf+Raises'
+  },
+  {
     id: 'ex_deadlift',
     name: 'Markløft (KB/Stang)',
     muscleGroup: MuscleGroup.BACK,
@@ -103,6 +127,22 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Benkpress'
   },
   {
+    id: 'ex_incline_press',
+    name: 'Incline Press',
+    muscleGroup: MuscleGroup.CHEST,
+    type: ExerciseType.WEIGHTED,
+    description: 'Ligg på en skråbenk (30-45 grader). Press manualene eller stangen opp fra brystet til armene er strake.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Incline+Press'
+  },
+  {
+    id: 'ex_cable_fly',
+    name: 'Cable Flies',
+    muscleGroup: MuscleGroup.CHEST,
+    type: ExerciseType.WEIGHTED,
+    description: 'Stå mellom to kabelstasjoner med armene ut til siden. Trekk hendene sammen foran brystet i en bueformet bevegelse.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Cable+Flies'
+  },
+  {
     id: 'ex_press',
     name: 'Skulderpress',
     muscleGroup: MuscleGroup.SHOULDERS,
@@ -111,12 +151,12 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Skulderpress'
   },
   {
-    id: 'ex_dips',
-    name: 'Dips',
-    muscleGroup: MuscleGroup.ARMS,
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Hold i stengene med strake armer. Senk kroppen ned ved å bøye i albuene til overarmene er parallelle med gulvet. Press opp igjen.',
-    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Dips'
+    id: 'ex_arnold_press',
+    name: 'Arnold Press',
+    muscleGroup: MuscleGroup.SHOULDERS,
+    type: ExerciseType.WEIGHTED,
+    description: 'Sitt med manualene foran skuldrene, håndflater mot deg. Roter håndleddene mens du presser vektene opp over hodet.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Arnold+Press'
   },
   {
     id: 'ex_lateral',
@@ -125,6 +165,14 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     type: ExerciseType.WEIGHTED,
     description: 'Stå med en manual i hver hånd. Løft armene rett ut til siden til de er på høyde med skuldrene. Senk rolig ned igjen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Sidehev'
+  },
+  {
+    id: 'ex_dips',
+    name: 'Dips',
+    muscleGroup: MuscleGroup.ARMS,
+    type: ExerciseType.BODYWEIGHT,
+    description: 'Hold i stengene med strake armer. Senk kroppen ned ved å bøye i albuene til overarmene er parallelle med gulvet. Press opp igjen.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Dips'
   },
 
   // --- Trekk (Rygg) ---
@@ -145,9 +193,25 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Nedtrekk'
   },
   {
+    id: 'ex_pullup',
+    name: 'Pull-ups',
+    muscleGroup: MuscleGroup.BACK,
+    type: ExerciseType.BODYWEIGHT,
+    description: 'Heng i stangen med hendene litt bredere enn skulderbredde. Trekk deg opp til haken er over stangen. Senk deg kontrollert ned.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Pull-ups'
+  },
+  {
+    id: 'ex_tbar_row',
+    name: 'T-bar Row',
+    muscleGroup: MuscleGroup.BACK,
+    type: ExerciseType.WEIGHTED,
+    description: 'Len deg fremover over T-bar stangen. Trekk vekten opp mot brystet med rett rygg. Klem skulderbladene sammen.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=T-bar+Row'
+  },
+  {
     id: 'ex_facepull',
     name: 'Face Pulls',
-    muscleGroup: MuscleGroup.SHOULDERS,
+    muscleGroup: MuscleGroup.BACK,
     type: ExerciseType.WEIGHTED,
     description: 'Fest et tau i kabelmaskinen i hodehøyde. Trekk tauet mot ansiktet mens du trekker albuene ut og bakover. Klem skulderbladene sammen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Face+Pulls'
@@ -159,14 +223,6 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     type: ExerciseType.BODYWEIGHT,
     description: 'Ligg på magen eller i et rygghev-apparat. Løft overkroppen opp ved å bruke korsryggen. Senk rolig ned igjen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Rygghev'
-  },
-  {
-    id: 'ex_pullup',
-    name: 'Pull-ups',
-    muscleGroup: MuscleGroup.BACK,
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Heng i stangen med hendene litt bredere enn skulderbredde. Trekk deg opp til haken er over stangen. Senk deg kontrollert ned.',
-    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Pull-ups'
   },
 
   // --- Kjerne ---
@@ -201,6 +257,40 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     type: ExerciseType.BODYWEIGHT,
     description: 'Sitt på rumpa med bøyde knær og føttene litt over gulvet. Len overkroppen litt bakover. Roter overkroppen fra side til side, gjerne med en vekt i hendene.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Russian+Twist'
+  },
+  {
+    id: 'ex_hanging_knee',
+    name: 'Hanging Knee Raises',
+    muscleGroup: MuscleGroup.CORE,
+    type: ExerciseType.BODYWEIGHT,
+    description: 'Heng i en stang med strake armer. Løft knærne opp mot brystet ved å bruke magemusklene. Senk kontrollert ned.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Hanging+Knee'
+  },
+
+  // --- Armer ---
+  {
+    id: 'ex_bicep_curl',
+    name: 'Bicep Curl',
+    muscleGroup: MuscleGroup.ARMS,
+    type: ExerciseType.WEIGHTED,
+    description: 'Stå med manualene hengende langs siden. Bøy albuene for å løfte vektene opp mot skuldrene. Senk kontrollert ned.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Bicep+Curl'
+  },
+  {
+    id: 'ex_hammer_curl',
+    name: 'Hammer Curl',
+    muscleGroup: MuscleGroup.ARMS,
+    type: ExerciseType.WEIGHTED,
+    description: 'Hold manualene med nøytral grep (håndflater mot hverandre). Bøy albuene for å løfte vektene. Senk kontrollert.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Hammer+Curl'
+  },
+  {
+    id: 'ex_tricep_ext',
+    name: 'Tricep Extensions',
+    muscleGroup: MuscleGroup.ARMS,
+    type: ExerciseType.WEIGHTED,
+    description: 'Hold en manual over hodet med begge hender. Senk vekten bak hodet ved å bøye i albuene. Strekk armene tilbake opp.',
+    imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Tricep+Ext'
   },
 
   // --- Kondisjon (Lavterskel & Helse) ---
