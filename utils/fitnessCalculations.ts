@@ -174,8 +174,8 @@ export const getRecommendations = (
             const firstFive = exerciseSuggestions.slice(0, 5);
             if (firstFive.length > 0) {
                 const intro = yesterdaySession 
-                    ? `🔄 I går trente du ${formatMuscles(muscles)}.`
-                    : `💡 Du trente ${formatMuscles(muscles)} forrige gang.`;
+                    ? `🔄 Sist trente du ${formatMuscles(muscles)}.`
+                    : `💡 Sist trente du ${formatMuscles(muscles)}.`;
                 const suggestion = `Prøv ${firstFive.join(', ')} i neste økt.`;
                 recommendations.push(`${intro} ${suggestion}`);
             }
