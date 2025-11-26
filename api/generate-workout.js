@@ -1,9 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   // Add CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -37,10 +36,10 @@ PROFIL:
 - Kjønn: ${profile.gender || 'Ikke oppgitt'}
 
 DENNE UKENS TRENING:
-${weekHistory.length > 0 ? weekHistory.map((s: any) => `- ${new Date(s.date).toLocaleDateString('nb-NO')}: ${s.exercises.map((e: any) => `${e.name} (${e.muscleGroup}, ${e.sets} sett)`).join(', ')}`).join('\n') : '- Ingen økter denne uken'}
+${weekHistory.length > 0 ? weekHistory.map((s) => `- ${new Date(s.date).toLocaleDateString('nb-NO')}: ${s.exercises.map((e) => `${e.name} (${e.muscleGroup}, ${e.sets} sett)`).join(', ')}`).join('\n') : '- Ingen økter denne uken'}
 
 TILGJENGELIGE ØVELSER:
-${availableExercises.map((e: any) => `- ${e.name} (${e.muscleGroup}, ${e.type}) [ID: ${e.id}]`).join('\n')}
+${availableExercises.map((e) => `- ${e.name} (${e.muscleGroup}, ${e.type}) [ID: ${e.id}]`).join('\n')}
 
 INSTRUKSJONER:
 1. Analyser hva brukeren har trent denne uken
