@@ -36,43 +36,84 @@ export default async function handler(req, res) {
         weekAgo.setDate(weekAgo.getDate() - 7);
         const weekHistory = (history || []).filter(s => new Date(s.date) >= weekAgo);
 
-        const prompt = `Du er en erfaren treningscoach. Analyser brukerens treningsprofil og gi 3-4 konkrete, personlige anbefalinger.
+        // Analyser treningshistorikk
+        const muscleGroupCounts = {};
+        let totalVolume = 0;
+        let cardioSessions = 0;
 
-PROFIL:
-- Mål: ${profile.goal}
-- Alder: ${profile.age || 'Ikke oppgitt'}
-- Vekt: ${profile.weight || 'Ikke oppgitt'}kg
-- Kjønn: ${profile.gender || 'Ikke oppgitt'}
+        weekHistory.forEach(session => {
+            session.exercises.forEach(ex => {
+                const muscle = ex.muscleGroup || 'Annet';
+                muscleGroupCounts[muscle] = (muscleGroupCounts[muscle] || 0) + 1;
+                totalVolume += ex.sets?.length || 0;
+                if (ex.type === 'CARDIO') cardioSessions++;
+            });
+        });
 
-DENNE UKENS TRENING:
-${weekHistory.length > 0 ? weekHistory.map((s) => `- ${new Date(s.date).toLocaleDateString('nb-NO')}: ${s.exercises.map((e) => `${e.name} (${e.muscleGroup}, ${e.sets} sett x ${e.reps} reps)`).join(', ')}`).join('\n') : '- Ingen økter denne uken'}
+        const prompt = `Du er en erfaren personlig trener med fokus på langsiktig, bærekraftig progresjon.
+
+BRUKERENS PROFIL:
+- Mål: ${profile.goal === 'strength' ? 'Styrke' : profile.goal === 'muscle' ? 'Muskelvekst' : profile.goal === 'endurance' ? 'Kondisjon' : 'Generell helse'}
+- Alder: ${profile.age || 'Ikke oppgitt'} år
+- Vekt: ${profile.weight || 'Ikke oppgitt'} kg
+- Kjønn: ${profile.gender === 'male' ? 'Mann' : profile.gender === 'female' ? 'Kvinne' : 'Ikke oppgitt'}
+
+TRENINGSAKTIVITET SISTE 7 DAGER:
+- Antall økter: ${weekHistory.length}
+- Totalt antall sett: ${totalVolume}
+- Cardio-økter: ${cardioSessions}
+- Muskelgrupper trent: ${Object.entries(muscleGroupCounts).map(([m, c]) => `${m} (${c}x)`).join(', ') || 'Ingen'}
+
+DETALJERT HISTORIKK:
+${weekHistory.length > 0 ? weekHistory.map((s, i) => `
+Økt ${i + 1} - ${new Date(s.date).toLocaleDateString('nb-NO')}:
+${s.exercises.map(e => `  • ${e.name} (${e.muscleGroup}): ${e.sets?.length || 0} sett`).join('\n')}
+`).join('\n') : 'Ingen økter denne uken'}
 
 TOTAL TRENINGSHISTORIKK:
 - Totalt ${history?.length || 0} økter registrert
 
-INSTRUKSJONER:
-1. Analyser treningsmønsteret (frekvens, intensitet, muskelfordeling)
-2. Gi konkrete, handlingsrettede råd basert på målet
-3. Identifiser potensielle ubalanser eller forbedringspunkter
-4. Inkluder ernærings- eller restitusjonstips hvis relevant
-5. Vær motiverende men realistisk
-6. Bruk emojis for å gjøre det visuelt appetitvekkkende
+OPPGAVE:
+Analyser brukerens treningsuke grundig og gi 4-6 konkrete, handlingsrettede anbefalinger. Hver anbefaling skal være:
 
-Returner et JSON-array med 3-4 anbefalinger (BARE JSON, ingen annen tekst):
+1. **Spesifikk og detaljert** - ikke generiske tips
+2. **Tilpasset brukerens mål og erfaring**
+3. **Basert på faktisk data** fra treningshistorikken
+4. **Handlingsrettet** - si eksakt hva brukeren skal gjøre
+5. **Variert** - dekk ulike aspekter (teknikk, volum, restitusjon, ernæring, periodisering)
+
+FOKUSOMRÅDER Å VURDERE:
+- Muskelgruppebalanse (er noe neglektert?)
+- Treningsfrekvens vs. mål (for mye/lite?)
+- Volum og intensitet (optimalt for målet?)
+- Restitusjon (nok hvile mellom økter?)
+- Progresjon (hvordan øke over tid?)
+- Ernæring tilpasset målet
+- Cardio vs. styrke-balanse
+- Periodisering (variasjon i treningen)
+- Teknikk og form
+- Mobilitet og skadeforebygging
+
+RETURNER JSON:
 {
   "recommendations": [
-    "💪 Din første anbefaling her...",
-    "🎯 Din andre anbefaling her...",
-    "🍗 Din tredje anbefaling her..."
+    "📊 **Volum & Intensitet**: Du har trent [antall] økter med [X] sett denne uken. For ditt mål om [mål] anbefaler jeg å...",
+    "💪 **Muskelbalanse**: Jeg ser at du har trent [muskel X] [antall] ganger, men [muskel Y] bare [antall]. Neste uke bør du...",
+    "🍽️ **Ernæring**: Med [mål] som mål og [vekt] kg kroppsvekt, bør du...",
+    "⚡ **Progresjon**: For å fortsette å utvikle deg, prøv å...",
+    "🧘 **Restitusjon**: Basert på [frekvens] økter denne uken..."
   ]
-}`;
+}
+
+Vær kreativ, personlig og gi tips som virkelig hjelper brukeren å nå målet sitt!`;
 
         console.log('Calling Gemini API for recommendations...');
         const result = await ai.models.generateContent({
             model: 'gemini-2.0-flash-001',
             contents: { parts: [{ text: prompt }] },
             config: {
-                responseMimeType: 'application/json'
+                responseMimeType: 'application/json',
+                temperature: 0.8
             }
         });
 

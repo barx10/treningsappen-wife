@@ -289,12 +289,14 @@ export default function App() {
             
             {/* AI Recommendations Display */}
             {aiRecommendations.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-blue-800/30 space-y-2">
-                <div className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-2">AI-analyse</div>
+              <div className="mt-4 pt-4 border-t border-purple-500/30 space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-2 flex items-center gap-1">
+                  <Lightbulb size={14} />
+                  AI-analyse
+                </div>
                 {aiRecommendations.map((rec, idx) => (
-                  <div key={idx} className="text-sm text-purple-200 flex items-start">
-                    <span className="mr-2 mt-0.5">✨</span>
-                    <span>{rec}</span>
+                  <div key={idx} className="p-3 bg-purple-500/10 rounded-lg border border-purple-500/30">
+                    <p className="text-sm text-slate-200 leading-relaxed">{rec}</p>
                   </div>
                 ))}
                 <button
