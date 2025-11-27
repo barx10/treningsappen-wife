@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         const { profile, history, exercises } = req.body;
 
         // Lag en oversikt over tilgjengelige øvelser
-        const exerciseList = exercises?.map(e => `- ${e.name} (${e.muscleGroup}, ${e.type}) [ID: ${e.id}]`).join('\n') || 'Ingen øvelser registrert';
+        const exerciseList = exercises?.map(e => `- ${e.name} (${e.muscleGroup}, ${e.type})`).join('\n') || 'Ingen øvelser registrert';
 
         if (!profile) {
             return res.status(400).json({ error: 'Profile is required' });
