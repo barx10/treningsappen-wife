@@ -39,27 +39,39 @@ export default async function handler(req, res) {
         weekAgo.setDate(weekAgo.getDate() - 7);
         const weekHistory = (history || []).filter(s => new Date(s.date) >= weekAgo);
 
+        // Map exercise definitions to history for detailed analysis
+        const enrichedHistory = weekHistory.map(session => ({
+            ...session,
+            exercises: session.exercises.map(ex => {
+                const definition = exercises?.find(e => e.id === ex.exerciseDefinitionId);
+                return {
+                    ...ex,
+                    name: definition?.name || 'Ukjent øvelse',
+                    muscleGroup: definition?.muscleGroup || null,
+                    type: definition?.type || null
+                };
+            })
+        }));
+
         // Analyser treningshistorikk
         const muscleGroupCounts = {};
         let totalVolume = 0;
         let cardioSessions = 0;
 
-        weekHistory.forEach(session => {
-                        session.exercises.forEach(ex => {
-                                // Bruk kun gyldige muskelgrupper
-                                const validGroups = [
-                                    'Bryst', 'Rygg', 'Bein', 'Skuldre', 'Armer', 'Kjerne', 'Kondisjon', 'Fullkropp'
-                                ];
-                                const muscle = validGroups.includes(ex.muscleGroup) ? ex.muscleGroup : null;
-                                if (muscle) {
-                                    muscleGroupCounts[muscle] = (muscleGroupCounts[muscle] || 0) + 1;
-                                }
-                                totalVolume += ex.sets?.length || 0;
-                                if (ex.type === 'CARDIO') cardioSessions++;
-                        });
-        });
-
-        const prompt = `Du er en erfaren personlig trener med fokus på langsiktig, bærekraftig progresjon.
+        enrichedHistory.forEach(session => {
+            session.exercises.forEach(ex => {
+                // Bruk kun gyldige muskelgrupper
+                const validGroups = [
+                  'Bryst', 'Rygg', 'Bein', 'Skuldre', 'Armer', 'Kjerne', 'Kondisjon', 'Fullkropp'
+                ];
+                const muscle = validGroups.includes(ex.muscleGroup) ? ex.muscleGroup : null;
+                if (muscle) {
+                  muscleGroupCounts[muscle] = (muscleGroupCounts[muscle] || 0) + 1;
+                }
+                totalVolume += ex.sets?.length || 0;
+                if (ex.type === 'CARDIO' || ex.type === 'Kardio') cardioSessions++;
+            });
+        });        const prompt = `Du er en erfaren personlig trener med fokus på langsiktig, bærekraftig progresjon.
 
 BRUKERENS PROFIL:
 - Mål: ${profile.goal === 'strength' ? 'Styrke' : profile.goal === 'muscle' ? 'Muskelvekst' : profile.goal === 'endurance' ? 'Kondisjon' : 'Generell helse'}
@@ -77,7 +89,7 @@ TRENINGSAKTIVITET SISTE 7 DAGER:
 - Muskelgrupper trent: ${Object.entries(muscleGroupCounts).map(([m, c]) => `${m} (${c}x)`).join(', ') || 'Ingen'}
 
 DETALJERT HISTORIKK:
-${weekHistory.length > 0 ? weekHistory.map((s, i) => `
+${enrichedHistory.length > 0 ? enrichedHistory.map((s, i) => `
 Økt ${i + 1} - ${new Date(s.date).toLocaleDateString('nb-NO')}:
 ${s.exercises.map(e => `  • ${e.name} (${e.muscleGroup}): ${e.sets?.length || 0} sett`).join('\n')}
 `).join('\n') : 'Ingen økter denne uken'}
