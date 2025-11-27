@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 
 export default async function handler(req, res) {
     // CORS headers
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         }
 
         console.log('Initializing Gemini AI...');
-        const ai = new GoogleGenerativeAI(apiKey);
+        const ai = new GoogleGenAI({ apiKey });
 
         // Get last 7 days of training
         const weekAgo = new Date();
@@ -112,13 +112,12 @@ Vær kreativ, personlig og gi tips som virkelig hjelper brukeren å nå målet s
             model: 'gemini-2.0-flash-001',
             contents: { parts: [{ text: prompt }] },
             config: {
-                responseMimeType: 'application/json',
-                temperature: 0.8
+                responseMimeType: 'application/json'
             }
         });
 
         console.log('Gemini API response received');
-        const text = result.response.text();
+        const text = result.text;
         console.log('Raw response:', text);
 
         let parsed = JSON.parse(text);
