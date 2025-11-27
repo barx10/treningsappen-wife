@@ -84,16 +84,17 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ initialExercise, 
 
           {/* Muscle Group */}
           <div>
-            <label className="block text-xs uppercase text-muted font-bold mb-2">Muskelgruppe</label>
+            <label className="block text-xs uppercase text-muted font-bold mb-2">Muskelgruppe *</label>
             <select
               value={muscleGroup}
               onChange={(e) => setMuscleGroup(e.target.value as MuscleGroup)}
-              className="w-full bg-background border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-primary appearance-none"
+              className="w-full bg-background border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-primary cursor-pointer hover:border-primary/50 transition-colors"
             >
               {Object.values(MuscleGroup).map(m => (
-                <option key={m} value={m}>{m}</option>
+                <option key={m} value={m} className="bg-slate-800">{m}</option>
               ))}
             </select>
+            <p className="text-[10px] text-muted mt-1">Viktig for AI-anbefalinger og treningsstatistikk</p>
           </div>
 
           {/* Description */}
