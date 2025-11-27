@@ -30,7 +30,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import ProfileView from './components/ProfileView';
 import InfoView from './components/InfoView';
 import AgentView from './components/AgentView';
-import { getWeeklyStats } from './utils/fitnessCalculations';
+import { getRecommendations, getWeeklyStats } from './utils/fitnessCalculations';
 import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell, Lightbulb, Flame, User } from 'lucide-react';
 
 export default function App() {
@@ -265,8 +265,7 @@ export default function App() {
               Anbefalinger for deg
             </h2>
             <div className="space-y-2">
-              {/* Her kan du bruke getRecommendations fra fitnessCalculations.ts */}
-              {require('./utils/fitnessCalculations').getRecommendations(profile, history, exercises).map((rec: string, idx: number) => (
+              {getRecommendations(profile, history, exercises).map((rec: string, idx: number) => (
                 <div key={idx} className="text-sm text-slate-200 flex items-start">
                   <span className="mr-2 mt-0.5">•</span>
                   <span>{rec}</span>
