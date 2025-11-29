@@ -7,13 +7,17 @@ En moderne Progressive Web App (PWA) for treningstracking med AI-genererte treni
 <details>
 <summary>Klikk for å se skjermbilder</summary>
 
-| Hjemskjerm | AI Agent | Aktiv Økt |
-|------------|----------|-----------|
-| ![Hjemskjerm](screenshots/home-screen.png) | ![AI Agent](screenshots/ai-agent.png) | ![Aktiv Økt](screenshots/active-workout.png) |
+| Forside | Dashboard | KI-trening |
+|---------|-----------|------------|
+| ![Forside](screenshots/Forside.png) | ![Dashboard](screenshots/Dashboard.png) | ![KI-trening](screenshots/KI-trening.png) |
 
-| Historikk | Profil | Øvelsesbibliotek |
-|-----------|--------|------------------|
-| ![Historikk](screenshots/history.png) | ![Profil](screenshots/profile.png) | ![Øvelser](screenshots/exercise-library.png) |
+| KI-anbefaling | Profil | Ernæring |
+|---------------|--------|----------|
+| ![KI-anbefaling](screenshots/KI-anbefaling.13.png) | ![Profil](screenshots/Profil-treningsmål.png) | ![Ernæring](screenshots/Ernæring.png) |
+
+| Ernæringsguide | Om appen |
+|----------------|----------|
+| ![Ernæringsguide](screenshots/Ernæringsguide.png) | ![Om appen](screenshots/Om%20appen.png) |
 
 </details>
 
