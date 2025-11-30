@@ -9,6 +9,7 @@ const RestTimer: React.FC<RestTimerProps> = ({ onComplete }) => {
     const [timeLeft, setTimeLeft] = useState(90); // Default 90 seconds
     const [isRunning, setIsRunning] = useState(false);
     const [initialTime, setInitialTime] = useState(90);
+    const [isCompact, setIsCompact] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const startTimeRef = useRef<number | null>(null);
@@ -60,15 +61,57 @@ const RestTimer: React.FC<RestTimerProps> = ({ onComplete }) => {
             setTimeLeft(initialTime);
         }
         setIsRunning(true);
+        setIsCompact(true); // Compact mode when timer starts
     };
 
     const handleReset = () => {
         setIsRunning(false);
         setTimeLeft(initialTime);
+        setIsCompact(false); // Expand when reset
     };
 
     const presetTimes = [60, 90, 120, 180];
 
+    // Compact view when timer is running
+    if (isCompact && isRunning) {
+        return (
+            <div 
+                onClick={() => setIsCompact(false)}
+                className="bg-slate-800/95 backdrop-blur-sm rounded-lg p-3 border border-slate-700 cursor-pointer hover:border-primary transition-all"
+            >
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Timer size={20} className="text-primary" />
+                        <div className={`text-2xl font-mono font-bold ${timeLeft <= 10 && timeLeft > 0 ? 'text-red-400' : 'text-white'}`}>
+                            {formatTime(timeLeft)}
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsRunning(false);
+                            }}
+                            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors text-sm"
+                        >
+                            <Pause size={14} />
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleReset();
+                            }}
+                            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors text-sm"
+                        >
+                            <RotateCcw size={14} />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Full view
     return (
         <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
             <div className="flex items-center justify-between mb-3">

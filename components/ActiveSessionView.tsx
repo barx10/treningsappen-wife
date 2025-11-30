@@ -188,8 +188,8 @@ const ActiveSessionView: React.FC<ActiveSessionViewProps> = ({
         </button>
       </div>
 
-      {/* Rest Timer */}
-      <div className="px-4 pt-4">
+      {/* Rest Timer - Sticky */}
+      <div className="sticky top-0 z-10 bg-background px-4 pt-4 pb-2 shadow-lg">
         <RestTimer />
       </div>
 
