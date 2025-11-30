@@ -131,6 +131,15 @@ const AgentView: React.FC<AgentViewProps> = ({ profile, history, exercises, onSt
             </p>
           </div>
         </div>
+        
+        {/* Privacy Notice */}
+        <div className="flex items-start gap-2 pt-2 border-t border-slate-700/50">
+          <span className="text-xs">🔒</span>
+          <p className="text-[10px] text-slate-500 leading-relaxed">
+            Ved å bruke AI-funksjonen sender vi din treningshistorikk og profil til Google Gemini API for analyse. 
+            Ingen personidentifiserbar informasjon (navn, e-post) sendes. Data lagres ikke permanent.
+          </p>
+        </div>
       </div>
 
       {/* Generate Button */}

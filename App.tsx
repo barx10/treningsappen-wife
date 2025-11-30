@@ -317,6 +317,9 @@ export default function App() {
               <Lightbulb size={16} />
               {loadingAiRecommendations ? 'Analyserer...' : '✨ Få dypere AI-analyse'}
             </button>
+            <p className="text-[10px] text-slate-500 text-center mt-1">
+              🔒 Sender treningsdata til Google Gemini API
+            </p>
             {/* AI Recommendations Display */}
             {aiRecommendations.length > 0 && (
               <div className="mt-4 pt-4 border-t border-purple-500/30 space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
