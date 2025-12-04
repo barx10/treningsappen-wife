@@ -34,7 +34,7 @@ import ProfileView from './components/ProfileView';
 import InfoView from './components/InfoView';
 import AgentView from './components/AgentView';
 import { getRecommendations, getWeeklyStats } from './utils/fitnessCalculations';
-import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell, Lightbulb, Flame, User } from 'lucide-react';
+import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell, Lightbulb, Flame, User, RefreshCw } from 'lucide-react';
 
 export default function App() {
   // --- State ---
@@ -48,6 +48,7 @@ export default function App() {
   const [history, setHistory] = useState<WorkoutSession[]>(loadHistory);
   const [profile, setProfile] = useState<UserProfile>(loadProfile);
   const [aiRecommendations, setAiRecommendations] = useState<string[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [loadingAiRecommendations, setLoadingAiRecommendations] = useState(false);
 
   // Ingen automatisk AI-henting
@@ -75,6 +76,14 @@ export default function App() {
   const [exerciseToEdit, setExerciseToEdit] = useState<ExerciseDefinition | undefined>(undefined);
 
   // --- Actions ---
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    // Force re-render of stats and recovery insights
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 600);
+  };
 
   const handleStartSession = () => {
     const session = createEmptySession();
@@ -221,9 +230,16 @@ export default function App() {
             <h1 className="text-2xl font-bold text-white">Hei {profile.name}!</h1>
             <p className="text-muted text-sm">Klar for en sunnere uke?</p>
           </div>
-          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg">
-            <Heart size={20} fill="white" />
-          </div>
+          <button
+            onClick={handleRefresh}
+            className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg hover:from-emerald-600 hover:to-teal-700 transition-all active:scale-95"
+          >
+            {isRefreshing ? (
+              <RefreshCw size={20} className="animate-spin" />
+            ) : (
+              <Heart size={20} fill="white" />
+            )}
+          </button>
         </header>
 
         {/* Stats */}
@@ -279,7 +295,7 @@ export default function App() {
         })()}
 
         {/* Recovery Insights */}
-        <RecoveryInsights history={history} exercises={exercises} />
+        <RecoveryInsights key={isRefreshing ? 'refreshing' : 'stable'} history={history} exercises={exercises} />
 
         {/* Lokale anbefalinger for treningsuken */}
         {profile.goal && (
