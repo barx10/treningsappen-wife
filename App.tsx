@@ -474,27 +474,6 @@ export default function App() {
             </button>
           </section>
         )}
-
-        <section>
-          <h2 className="text-lg font-bold text-white mb-3">Siste aktivitet</h2>
-          <div className="space-y-3">
-            {recentWorkouts.length > 0 ? (
-              recentWorkouts.map(session => (
-                <WorkoutHistoryCard
-                  key={session.id}
-                  session={session}
-                  exercises={exercises}
-                  userWeight={profile.weight}
-                  onDelete={handleDeleteHistory}
-                />
-              ))
-            ) : (
-              <div className="p-8 text-center border border-dashed border-slate-700 rounded-xl text-muted">
-                Ingen historikk enda.
-              </div>
-            )}
-          </div>
-        </section>
       </div>
     );
   };
