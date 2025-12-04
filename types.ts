@@ -19,6 +19,7 @@ export interface ExerciseDefinition {
   id: string;
   name: string;
   muscleGroup: MuscleGroup;
+  secondaryMuscleGroups?: MuscleGroup[]; // Muscles also worked during this exercise
   type: ExerciseType;
   description?: string; // Instructions
   imageUrl?: string; // URL to image/gif

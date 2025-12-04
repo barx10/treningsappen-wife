@@ -38,8 +38,22 @@ export function calculateMuscleGroupRecovery(
   completedSessions.forEach(session => {
     session.exercises.forEach(exercise => {
       const def = exercises.find(e => e.id === exercise.exerciseDefinitionId);
-      if (def && !muscleGroupLastTrained.has(def.muscleGroup)) {
-        muscleGroupLastTrained.set(def.muscleGroup, parseDateString(session.date));
+      if (def) {
+        const sessionDate = parseDateString(session.date);
+        
+        // Count primary muscle group
+        if (!muscleGroupLastTrained.has(def.muscleGroup)) {
+          muscleGroupLastTrained.set(def.muscleGroup, sessionDate);
+        }
+        
+        // Count secondary muscle groups
+        if (def.secondaryMuscleGroups) {
+          def.secondaryMuscleGroups.forEach(secondaryMuscle => {
+            if (!muscleGroupLastTrained.has(secondaryMuscle)) {
+              muscleGroupLastTrained.set(secondaryMuscle, sessionDate);
+            }
+          });
+        }
       }
     });
   });

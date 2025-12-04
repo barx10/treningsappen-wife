@@ -33,6 +33,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_squat',
     name: 'Knebøy / Goblet Squat',
     muscleGroup: MuscleGroup.LEGS,
+    secondaryMuscleGroups: [MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
     description: 'Hold vekten foran brystet. Stå med skulderbreddes avstand. Sett deg ned som om du skal på en stol, hold ryggen rett. Press opp gjennom hælene.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Kneb%C3%B8y'
@@ -41,6 +42,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_lunges',
     name: 'Utfall (Gående/Stående)',
     muscleGroup: MuscleGroup.LEGS,
+    secondaryMuscleGroups: [MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
     description: 'Ta et stort steg frem. Senk bakre kne nesten ned i gulvet. Hold overkroppen oppreist. Skyv tilbake til start.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Utfall'
@@ -57,6 +59,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_stepup',
     name: 'Step-ups på kasse',
     muscleGroup: MuscleGroup.LEGS,
+    secondaryMuscleGroups: [MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
     description: 'Stå foran en kasse eller benk. Sett den ene foten opp på kassen. Press deg opp ved å bruke beinet på kassen, til du står med begge føttene oppe. Senk deg kontrollert ned igjen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Step-ups'
@@ -65,6 +68,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_bridge',
     name: 'Hoftehev / Glute Bridge',
     muscleGroup: MuscleGroup.LEGS,
+    secondaryMuscleGroups: [MuscleGroup.CORE],
     type: ExerciseType.BODYWEIGHT,
     description: 'Ligg på ryggen med føttene i gulvet. Løft hoften opp mot taket ved å stramme setemusklene. Hold i 1-2 sekunder på toppen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Hoftehev'
@@ -73,6 +77,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_bulgarian_split',
     name: 'Bulgarian Split Squat',
     muscleGroup: MuscleGroup.LEGS,
+    secondaryMuscleGroups: [MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
     description: 'Stå foran en benk. Plasser den ene foten bakover på benken. Senk kroppen ved å bøye det fremre beinet til kneet nesten berører gulvet. Press opp igjen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Bulgarian+Split'
@@ -97,6 +102,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_deadlift',
     name: 'Markløft (KB/Stang)',
     muscleGroup: MuscleGroup.BACK,
+    secondaryMuscleGroups: [MuscleGroup.LEGS, MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
     description: 'Stå med vekten mellom føttene. Bøy i hofta (ikke ryggen) for å gripe vekten. Stram magen, og reis deg opp ved å skyve hofta frem.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Markl%C3%B8ft'
@@ -105,6 +111,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_rdl',
     name: 'Strake Markløft (Rumensk)',
     muscleGroup: MuscleGroup.LEGS,
+    secondaryMuscleGroups: [MuscleGroup.BACK, MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
     description: 'Stå med føttene i hoftebredde. Hold stangen/vektene foran lårene. Bøy i hoften og senk vektene ned langs beina mens du holder ryggen rett og beina nesten strake. Kjenn strekken i bakside lår.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Strake+Markl%C3%B8ft'
@@ -115,6 +122,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_pushup',
     name: 'Armhevinger',
     muscleGroup: MuscleGroup.CHEST,
+    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.SHOULDERS, MuscleGroup.CORE],
     type: ExerciseType.BODYWEIGHT,
     description: 'Plasser hendene litt bredere enn skuldrene. Hold kroppen strak som en planke. Senk brystet mot gulvet og skyv opp.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Armhevinger'
@@ -123,6 +131,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_bench',
     name: 'Benkpress',
     muscleGroup: MuscleGroup.CHEST,
+    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.SHOULDERS],
     type: ExerciseType.WEIGHTED,
     description: 'Ligg på benken. Senk stangen kontrollert ned til brystet. Press stangen opp til armene er strake.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Benkpress'
@@ -131,6 +140,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_incline_press',
     name: 'Incline Press',
     muscleGroup: MuscleGroup.CHEST,
+    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.SHOULDERS],
     type: ExerciseType.WEIGHTED,
     description: 'Ligg på en skråbenk (30-45 grader). Press manualene eller stangen opp fra brystet til armene er strake.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Incline+Press'
@@ -139,6 +149,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_cable_fly',
     name: 'Cable Flies',
     muscleGroup: MuscleGroup.CHEST,
+    secondaryMuscleGroups: [MuscleGroup.SHOULDERS],
     type: ExerciseType.WEIGHTED,
     description: 'Stå mellom to kabelstasjoner med armene ut til siden. Trekk hendene sammen foran brystet i en bueformet bevegelse.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Cable+Flies'
@@ -147,6 +158,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_press',
     name: 'Skulderpress',
     muscleGroup: MuscleGroup.SHOULDERS,
+    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
     description: 'Press manualene eller stangen fra skuldrene og rett opp over hodet. Senk kontrollert ned igjen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Skulderpress'
@@ -155,6 +167,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_arnold_press',
     name: 'Arnold Press',
     muscleGroup: MuscleGroup.SHOULDERS,
+    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
     description: 'Sitt med manualene foran skuldrene, håndflater mot deg. Roter håndleddene mens du presser vektene opp over hodet.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Arnold+Press'
@@ -171,6 +184,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_dips',
     name: 'Dips',
     muscleGroup: MuscleGroup.ARMS,
+    secondaryMuscleGroups: [MuscleGroup.CHEST, MuscleGroup.SHOULDERS],
     type: ExerciseType.BODYWEIGHT,
     description: 'Hold i stengene med strake armer. Senk kroppen ned ved å bøye i albuene til overarmene er parallelle med gulvet. Press opp igjen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Dips'
@@ -181,6 +195,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_row',
     name: 'Roing',
     muscleGroup: MuscleGroup.BACK,
+    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
     description: 'Len deg fremover med rett rygg. Trekk vekten opp mot nedre del av magen. Klem skulderbladene sammen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Roing'
@@ -189,6 +204,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_lat_row',
     name: 'Nedtrekk / Sittende Roing',
     muscleGroup: MuscleGroup.BACK,
+    secondaryMuscleGroups: [MuscleGroup.ARMS],
     type: ExerciseType.WEIGHTED,
     description: 'Trekk stangen ned til øvre del av brystet. Hold albuene litt ut til siden. Slipp rolig opp igjen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Nedtrekk'
@@ -197,6 +213,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_pullup',
     name: 'Pull-ups',
     muscleGroup: MuscleGroup.BACK,
+    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.CORE],
     type: ExerciseType.BODYWEIGHT,
     description: 'Heng i stangen med hendene litt bredere enn skulderbredde. Trekk deg opp til haken er over stangen. Senk deg kontrollert ned.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Pull-ups'
@@ -205,6 +222,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_tbar_row',
     name: 'T-bar Row',
     muscleGroup: MuscleGroup.BACK,
+    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
     description: 'Len deg fremover over T-bar stangen. Trekk vekten opp mot brystet med rett rygg. Klem skulderbladene sammen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=T-bar+Row'
@@ -213,6 +231,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_facepull',
     name: 'Face Pulls',
     muscleGroup: MuscleGroup.BACK,
+    secondaryMuscleGroups: [MuscleGroup.SHOULDERS],
     type: ExerciseType.WEIGHTED,
     description: 'Fest et tau i kabelmaskinen i hodehøyde. Trekk tauet mot ansiktet mens du trekker albuene ut og bakover. Klem skulderbladene sammen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Face+Pulls'
@@ -221,6 +240,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_back_ext',
     name: 'Rygghev',
     muscleGroup: MuscleGroup.BACK,
+    secondaryMuscleGroups: [MuscleGroup.LEGS],
     type: ExerciseType.BODYWEIGHT,
     description: 'Ligg på magen eller i et rygghev-apparat. Løft overkroppen opp ved å bruke korsryggen. Senk rolig ned igjen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Rygghev'
@@ -231,6 +251,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_plank',
     name: 'Planke',
     muscleGroup: MuscleGroup.CORE,
+    secondaryMuscleGroups: [MuscleGroup.SHOULDERS],
     type: ExerciseType.DURATION,
     description: 'Støtt deg på albuene og tærne. Hold kroppen helt rett. Stram magen og setet. Ikke la korsryggen svaie.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Planke'
@@ -239,6 +260,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_sideplank',
     name: 'Sideplanke',
     muscleGroup: MuscleGroup.CORE,
+    secondaryMuscleGroups: [MuscleGroup.SHOULDERS],
     type: ExerciseType.DURATION,
     description: 'Ligg på siden og støtt deg på albuen. Løft hoften opp fra gulvet slik at kroppen danner en rett linje. Hold posisjonen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Sideplanke'
@@ -263,6 +285,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_hanging_knee',
     name: 'Hanging Knee Raises',
     muscleGroup: MuscleGroup.CORE,
+    secondaryMuscleGroups: [MuscleGroup.ARMS],
     type: ExerciseType.BODYWEIGHT,
     description: 'Heng i en stang med strake armer. Løft knærne opp mot brystet ved å bruke magemusklene. Senk kontrollert ned.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Hanging+Knee'
@@ -289,6 +312,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_tricep_ext',
     name: 'Tricep Extensions',
     muscleGroup: MuscleGroup.ARMS,
+    secondaryMuscleGroups: [MuscleGroup.SHOULDERS],
     type: ExerciseType.WEIGHTED,
     description: 'Hold en manual over hodet med begge hender. Senk vekten bak hodet ved å bøye i albuene. Strekk armene tilbake opp.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Tricep+Ext'
@@ -299,6 +323,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_walk_int',
     name: 'Gange m/ Intervaller',
     muscleGroup: MuscleGroup.CARDIO,
+    secondaryMuscleGroups: [MuscleGroup.LEGS],
     type: ExerciseType.CARDIO,
     description: 'Veksle mellom rask gange (andpusten) og rolig gange. F.eks. 1 min raskt, 1 min rolig.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Gange'
@@ -307,6 +332,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_walk_fast',
     name: 'Rask Gange',
     muscleGroup: MuscleGroup.CARDIO,
+    secondaryMuscleGroups: [MuscleGroup.LEGS],
     type: ExerciseType.CARDIO,
     description: 'Gå i et tempo som gjør at du blir varm og litt andpusten, men fortsatt kan føre en samtale.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Rask+Gange'
@@ -315,6 +341,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_stairs',
     name: 'Trappeintervaller',
     muscleGroup: MuscleGroup.CARDIO,
+    secondaryMuscleGroups: [MuscleGroup.LEGS],
     type: ExerciseType.CARDIO,
     description: 'Løp eller gå raskt opp en trapp. Gå rolig ned igjen. Gjenta.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Trapper'
@@ -323,6 +350,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     id: 'ex_bike',
     name: 'Sykling',
     muscleGroup: MuscleGroup.CARDIO,
+    secondaryMuscleGroups: [MuscleGroup.LEGS],
     type: ExerciseType.CARDIO,
     description: 'Sykling utendørs eller på ergometersykkel. Hold et jevnt tempo eller kjør intervaller.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Sykling'

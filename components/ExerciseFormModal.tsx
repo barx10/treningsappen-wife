@@ -12,8 +12,19 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ initialExercise, 
   const [name, setName] = useState(initialExercise?.name || '');
   const [type, setType] = useState<ExerciseType>(initialExercise?.type || ExerciseType.WEIGHTED);
   const [muscleGroup, setMuscleGroup] = useState<MuscleGroup>(initialExercise?.muscleGroup || MuscleGroup.CHEST);
+  const [secondaryMuscleGroups, setSecondaryMuscleGroups] = useState<MuscleGroup[]>(initialExercise?.secondaryMuscleGroups || []);
   const [description, setDescription] = useState(initialExercise?.description || '');
   const [imageUrl, setImageUrl] = useState(initialExercise?.imageUrl || '');
+
+  const handleToggleSecondaryMuscle = (muscle: MuscleGroup) => {
+    if (muscle === muscleGroup) return; // Can't add primary as secondary
+    
+    if (secondaryMuscleGroups.includes(muscle)) {
+      setSecondaryMuscleGroups(secondaryMuscleGroups.filter(m => m !== muscle));
+    } else {
+      setSecondaryMuscleGroups([...secondaryMuscleGroups, muscle]);
+    }
+  };
 
   const handleSubmit = () => {
     if (!name.trim()) return;
@@ -23,6 +34,7 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ initialExercise, 
       name,
       type,
       muscleGroup,
+      secondaryMuscleGroups: secondaryMuscleGroups.length > 0 ? secondaryMuscleGroups : undefined,
       description: description.trim() || undefined,
       imageUrl: imageUrl.trim() || undefined,
       isCustom: true,
@@ -94,7 +106,37 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ initialExercise, 
                 <option key={m} value={m} className="bg-slate-800">{m}</option>
               ))}
             </select>
-            <p className="text-[10px] text-muted mt-1">Viktig for AI-anbefalinger og treningsstatistikk</p>
+            <p className="text-[10px] text-muted mt-1">Primær muskelgruppe for øvelsen</p>
+          </div>
+
+          {/* Secondary Muscle Groups */}
+          <div>
+            <label className="block text-xs uppercase text-muted font-bold mb-2">Sekundære muskelgrupper (Valgfritt)</label>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.values(MuscleGroup).map(muscle => {
+                const isPrimary = muscle === muscleGroup;
+                const isSelected = secondaryMuscleGroups.includes(muscle);
+                
+                return (
+                  <button
+                    key={muscle}
+                    type="button"
+                    onClick={() => handleToggleSecondaryMuscle(muscle)}
+                    disabled={isPrimary}
+                    className={`p-2 rounded-lg text-xs font-medium border transition-colors ${
+                      isPrimary
+                        ? 'bg-slate-800 border-slate-700 text-slate-600 cursor-not-allowed'
+                        : isSelected
+                        ? 'bg-primary/20 border-primary text-primary'
+                        : 'bg-background border-slate-700 text-slate-400 hover:bg-slate-700'
+                    }`}
+                  >
+                    {muscle}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[10px] text-muted mt-1">Velg andre muskler som jobber under øvelsen (f.eks. Armer ved Benkpress)</p>
           </div>
 
           {/* Description */}
