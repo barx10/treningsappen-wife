@@ -18,6 +18,12 @@ interface HistoryOverviewChartProps {
 }
 
 const HistoryOverviewChart: React.FC<HistoryOverviewChartProps> = ({ history, exercises }) => {
+    const getWeekNumber = (date: Date) => {
+        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+        const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    };
+
     const weeklyData = useMemo(() => {
         // Get last 12 weeks
         const weeks: Record<string, { workouts: number; volume: number; weekLabel: string }> = {};
@@ -53,13 +59,7 @@ const HistoryOverviewChart: React.FC<HistoryOverviewChartProps> = ({ history, ex
         });
 
         return Object.values(weeks);
-    }, [history]);
-
-    const getWeekNumber = (date: Date) => {
-        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-        const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
-        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-    };
+    }, [history, getWeekNumber]);
 
     if (history.length < 2) {
         return (
