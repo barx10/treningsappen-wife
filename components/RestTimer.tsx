@@ -11,13 +11,18 @@ const RestTimer: React.FC<RestTimerProps> = ({ onComplete }) => {
     const [initialTime, setInitialTime] = useState(90);
     const [isCompact, setIsCompact] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const beepAudioRef = useRef<HTMLAudioElement | null>(null);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const startTimeRef = useRef<number | null>(null);
     const remainingRef = useRef<number>(90);
+    const hasPlayedBeepsRef = useRef<Set<number>>(new Set());
 
     useEffect(() => {
-        // Create audio element for notification
+        // Create audio element for completion notification
         audioRef.current = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWi77eafTRAMUKfj8LZjHAY4ktfyzHksBSR3x/DdkEAKFF606+uoVRQKRp/g8r5sIQUrgs7y2Ik2CBlou+3mn00QDFCn4/C2YxwGOJLX8sx5LAUkd8fw3ZBAC');
+        
+        // Create beep audio for countdown (simple beep sound)
+        beepAudioRef.current = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWi77eafTRAMUKfj8LZjHAY4ktfyzHksBSR3x/DdkEAKFF606+uoVRQKRp/g8r5sIQUrgs7y2Ik2CBlou+3mn00QDFCn4/C2YxwGOJLX8sx5LAUkd8fw3ZBAC');
     }, []);
 
     useEffect(() => {
@@ -33,10 +38,20 @@ const RestTimer: React.FC<RestTimerProps> = ({ onComplete }) => {
                 
                 setTimeLeft(newTimeLeft);
 
+                // Play beep sound at 3, 2, 1 seconds
+                if (newTimeLeft > 0 && newTimeLeft <= 3 && !hasPlayedBeepsRef.current.has(newTimeLeft)) {
+                    hasPlayedBeepsRef.current.add(newTimeLeft);
+                    if (beepAudioRef.current) {
+                        beepAudioRef.current.currentTime = 0;
+                        beepAudioRef.current.play().catch(() => { });
+                    }
+                }
+
                 if (newTimeLeft === 0) {
                     setIsRunning(false);
                     startTimeRef.current = null;
-                    // Play sound
+                    hasPlayedBeepsRef.current.clear(); // Reset for next timer
+                    // Play completion sound
                     if (audioRef.current) {
                         audioRef.current.play().catch(() => { });
                     }
@@ -81,6 +96,7 @@ const RestTimer: React.FC<RestTimerProps> = ({ onComplete }) => {
         setIsRunning(false);
         setTimeLeft(initialTime);
         setIsCompact(false); // Expand when reset
+        hasPlayedBeepsRef.current.clear(); // Reset beeps
     };
 
     const presetTimes = [60, 90, 120, 180];
