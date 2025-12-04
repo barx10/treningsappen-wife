@@ -28,7 +28,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onEnter }) => {
                 </div>
 
                 <h1 className="text-4xl font-black text-white mb-2 tracking-tight drop-shadow-lg">
-                    TRENINGS<span className="text-primary">APPEN</span>
+                    MIN TRENINGS<span className="text-primary">APP</span>
                 </h1>
 
                 <p className="text-slate-300 text-lg font-medium mb-12 max-w-[200px] leading-relaxed drop-shadow-md">
