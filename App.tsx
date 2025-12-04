@@ -21,6 +21,7 @@ import {
   saveActiveSession
 } from './utils/storage';
 import { loadProfile, saveProfile } from './utils/profileStorage';
+import { getTodayDateString } from './utils/dateUtils';
 import BottomNav from './components/BottomNav';
 import ExerciseCard from './components/ExerciseCard';
 import WorkoutHistoryCard from './components/WorkoutHistoryCard';
@@ -148,7 +149,7 @@ export default function App() {
       const newSession: WorkoutSession = {
         id: crypto.randomUUID(),
         name: workout.name || 'AI-generert økt',
-        date: new Date().toISOString(),
+        date: getTodayDateString(),
         startTime: new Date().toISOString(),
         status: WorkoutStatus.ACTIVE,
         exercises: validExercises,

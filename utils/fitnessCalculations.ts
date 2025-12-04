@@ -1,4 +1,5 @@
 import { UserProfile, WorkoutSession, ExerciseDefinition, ExerciseType, MuscleGroup } from '../types';
+import { getStartOfWeek, isYesterday, parseDateString } from './dateUtils';
 
 /**
  * Calculate estimated calories burned during a workout session
@@ -57,21 +58,18 @@ export const getRecommendations = (
         return ['🚀 Start uka med en styrkeøkt – alt teller!'];
     }
 
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    const day = startOfWeek.getDay();
-    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-    startOfWeek.setDate(diff);
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    const sessionsThisWeek = history.filter((session) => new Date(session.date) >= startOfWeek);
-    const sortedHistory = [...history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    const lastSession = sortedHistory[0];
-    const yesterdaySession = sortedHistory.find((session) => {
-        const sessionDate = new Date(session.date);
-        const diffMs = now.getTime() - sessionDate.getTime();
-        return diffMs > 0 && diffMs <= 24 * 60 * 60 * 1000;
+    const startOfWeek = getStartOfWeek();
+    const sessionsThisWeek = history.filter((session) => {
+        const sessionDate = parseDateString(session.date);
+        return sessionDate >= startOfWeek;
     });
+    const sortedHistory = [...history].sort((a, b) => {
+        const dateA = parseDateString(a.date);
+        const dateB = parseDateString(b.date);
+        return dateB.getTime() - dateA.getTime();
+    });
+    const lastSession = sortedHistory[0];
+    const yesterdaySession = sortedHistory.find((session) => isYesterday(session.date));
 
     const muscleCounts: Record<string, number> = {};
     let cardioSessions = 0;
@@ -272,13 +270,12 @@ export const getWeeklyStats = (
     exercises: ExerciseDefinition[],
     userWeight?: number
 ) => {
-    const now = new Date();
-    const day = now.getDay();
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-    const monday = new Date(now.setDate(diff));
-    monday.setHours(0, 0, 0, 0);
+    const monday = getStartOfWeek();
 
-    const weekSessions = history.filter((s) => new Date(s.date) >= monday);
+    const weekSessions = history.filter((s) => {
+        const sessionDate = parseDateString(s.date);
+        return sessionDate >= monday;
+    });
 
     let totalMinutes = 0;
     let totalCalories = 0;

@@ -6,6 +6,7 @@ import {
   WorkoutStatus,
   WorkoutExercise
 } from '../types';
+import { getTodayDateString, getDateString } from './dateUtils';
 
 // Definerer øvelsene fra programmet ditt + gode alternativer
 export const createInitialExercises = (): ExerciseDefinition[] => [
@@ -375,7 +376,7 @@ const createSets = (count: number, reps: number = 10) => {
 export const createSessionA = (): WorkoutSession => ({
   id: crypto.randomUUID(),
   name: 'Økt A: Styrke & Intervall',
-  date: new Date().toISOString(),
+  date: getTodayDateString(),
   startTime: new Date().toISOString(),
   status: WorkoutStatus.ACTIVE,
   exercises: [
@@ -391,7 +392,7 @@ export const createSessionA = (): WorkoutSession => ({
 export const createSessionB = (): WorkoutSession => ({
   id: crypto.randomUUID(),
   name: 'Økt B: Base & Trapper',
-  date: new Date().toISOString(),
+  date: getTodayDateString(),
   startTime: new Date().toISOString(),
   status: WorkoutStatus.ACTIVE,
   exercises: [
@@ -412,7 +413,7 @@ export const createInitialHistory = (): WorkoutSession[] => {
   const session = createSessionA();
   session.id = 'past_session_1';
   session.status = WorkoutStatus.COMPLETED; // Corrected syntax from previous version
-  session.date = date.toISOString();
+  session.date = getDateString(date);
   session.startTime = date.toISOString();
   session.endTime = new Date(date.getTime() + 45 * 60000).toISOString(); // 45 min later
   session.exercises.forEach(ex => ex.sets.forEach(s => {
@@ -426,7 +427,7 @@ export const createInitialHistory = (): WorkoutSession[] => {
 export const createEmptySession = (): WorkoutSession => ({
   id: crypto.randomUUID(),
   name: 'Egentrening',
-  date: new Date().toISOString(),
+  date: getTodayDateString(),
   startTime: new Date().toISOString(),
   exercises: [],
   status: WorkoutStatus.ACTIVE

@@ -1,4 +1,5 @@
 import { WorkoutSession, MuscleGroup, ExerciseDefinition } from '../types';
+import { parseDateString, getDaysDifference, isYesterday } from './dateUtils';
 
 export interface MuscleGroupRecovery {
   muscleGroup: MuscleGroup;
@@ -28,13 +29,17 @@ export function calculateMuscleGroupRecovery(
   // Find last training date for each muscle group
   const completedSessions = history
     .filter(s => s.status === 'Fullført')
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => {
+      const dateA = parseDateString(a.date);
+      const dateB = parseDateString(b.date);
+      return dateB.getTime() - dateA.getTime();
+    });
 
   completedSessions.forEach(session => {
     session.exercises.forEach(exercise => {
       const def = exercises.find(e => e.id === exercise.exerciseDefinitionId);
       if (def && !muscleGroupLastTrained.has(def.muscleGroup)) {
-        muscleGroupLastTrained.set(def.muscleGroup, new Date(session.date));
+        muscleGroupLastTrained.set(def.muscleGroup, parseDateString(session.date));
       }
     });
   });
@@ -92,23 +97,11 @@ export function checkOvertrainingRisk(
   todaysMuscleGroups: MuscleGroup[]
 ): RecoveryWarning[] {
   const warnings: RecoveryWarning[] = [];
-  
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  yesterday.setHours(0, 0, 0, 0);
-
-  const yesterdayEnd = new Date(yesterday);
-  yesterdayEnd.setHours(23, 59, 59, 999);
 
   // Find yesterday's muscle groups
   const yesterdaysMuscleGroups = new Set<MuscleGroup>();
   history
-    .filter(s => {
-      const sessionDate = new Date(s.date);
-      return s.status === 'Fullført' && 
-             sessionDate >= yesterday && 
-             sessionDate <= yesterdayEnd;
-    })
+    .filter(s => s.status === 'Fullført' && isYesterday(s.date))
     .forEach(session => {
       session.exercises.forEach(exercise => {
         const def = exercises.find(e => e.id === exercise.exerciseDefinitionId);
