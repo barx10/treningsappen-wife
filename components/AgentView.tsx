@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Zap, TrendingUp, Calendar, AlertCircle, Loader2 } from 'lucide-react';
+import { Sparkles, Zap, TrendingUp, Calendar, AlertCircle, Loader2, RefreshCw, X } from 'lucide-react';
 import type { WorkoutSession, ExerciseDefinition, UserProfile } from '../types';
 
 interface AgentViewProps {
@@ -27,6 +27,8 @@ const AgentView: React.FC<AgentViewProps> = ({ profile, history, exercises, onSt
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedWorkout, setGeneratedWorkout] = useState<GeneratedWorkout | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [swappingExerciseIndex, setSwappingExerciseIndex] = useState<number | null>(null);
+  const [alternativeExercises, setAlternativeExercises] = useState<ExerciseDefinition[]>([]);
 
   const generateWorkout = async () => {
     setIsGenerating(true);
@@ -124,6 +126,49 @@ const AgentView: React.FC<AgentViewProps> = ({ profile, history, exercises, onSt
   const startGeneratedWorkout = () => {
     if (!generatedWorkout) return;
     onStartWorkout(generatedWorkout);
+  };
+
+  const handleSwapExercise = (exerciseIndex: number) => {
+    if (!generatedWorkout) return;
+    
+    const currentExercise = exercises.find(e => e.id === generatedWorkout.exercises[exerciseIndex].exerciseId);
+    if (!currentExercise) return;
+
+    // Find alternative exercises from same muscle group (exclude current)
+    const alternatives = exercises
+      .filter(e => 
+        e.muscleGroup === currentExercise.muscleGroup && 
+        e.id !== currentExercise.id
+      )
+      .sort(() => Math.random() - 0.5) // Shuffle
+      .slice(0, 3); // Take 3 random alternatives
+
+    setAlternativeExercises(alternatives);
+    setSwappingExerciseIndex(exerciseIndex);
+  };
+
+  const replaceExercise = (newExerciseId: string) => {
+    if (!generatedWorkout || swappingExerciseIndex === null) return;
+
+    const updatedExercises = [...generatedWorkout.exercises];
+    updatedExercises[swappingExerciseIndex] = {
+      ...updatedExercises[swappingExerciseIndex],
+      exerciseId: newExerciseId,
+    };
+
+    setGeneratedWorkout({
+      ...generatedWorkout,
+      exercises: updatedExercises,
+    });
+
+    // Close swap modal
+    setSwappingExerciseIndex(null);
+    setAlternativeExercises([]);
+  };
+
+  const cancelSwap = () => {
+    setSwappingExerciseIndex(null);
+    setAlternativeExercises([]);
   };
 
   return (
@@ -244,7 +289,16 @@ const AgentView: React.FC<AgentViewProps> = ({ profile, history, exercises, onSt
                       <h3 className="font-semibold text-white">{exercise.name}</h3>
                       <p className="text-xs text-slate-400 mt-0.5">{exercise.muscleGroup}</p>
                     </div>
-                    <span className="text-sm font-bold text-purple-400">#{i + 1}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-purple-400">#{i + 1}</span>
+                      <button
+                        onClick={() => handleSwapExercise(i)}
+                        className="p-1.5 hover:bg-slate-700 rounded-lg transition-colors"
+                        title="Bytt øvelse"
+                      >
+                        <RefreshCw size={16} className="text-slate-400 hover:text-white" />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex gap-4 text-sm text-slate-300">
@@ -278,6 +332,46 @@ const AgentView: React.FC<AgentViewProps> = ({ profile, history, exercises, onSt
             <Zap size={20} />
             Start denne økten
           </button>
+        </div>
+      )}
+
+      {/* Exercise Swap Modal */}
+      {swappingExerciseIndex !== null && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={cancelSwap}>
+          <div className="bg-slate-800 rounded-xl max-w-md w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-white">Bytt til annen øvelse</h3>
+              <button onClick={cancelSwap} className="p-1 hover:bg-slate-700 rounded-lg transition-colors">
+                <X size={20} className="text-slate-400" />
+              </button>
+            </div>
+
+            {alternativeExercises.length > 0 ? (
+              <div className="space-y-2">
+                {alternativeExercises.map((alt) => (
+                  <button
+                    key={alt.id}
+                    onClick={() => replaceExercise(alt.id)}
+                    className="w-full bg-surface border border-slate-700 hover:border-purple-500 rounded-lg p-4 text-left transition-all hover:scale-[1.02]"
+                  >
+                    <div className="font-semibold text-white">{alt.name}</div>
+                    <div className="text-xs text-slate-400 mt-1">{alt.muscleGroup} • {alt.type}</div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-slate-400">
+                <p>Ingen alternative øvelser funnet for denne muskelgruppen.</p>
+              </div>
+            )}
+
+            <button
+              onClick={cancelSwap}
+              className="w-full bg-slate-700 text-white py-2 rounded-lg hover:bg-slate-600 transition-colors"
+            >
+              Avbryt
+            </button>
+          </div>
         </div>
       )}
     </div>
