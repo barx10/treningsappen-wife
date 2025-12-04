@@ -4,11 +4,43 @@ import { STORAGE_KEYS } from './storageKeys';
 
 const hasStorage = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
 
+/**
+ * Migrate stored exercises to include secondary muscle groups from initial data
+ */
+const migrateExercises = (storedExercises: ExerciseDefinition[]): ExerciseDefinition[] => {
+    const initialExercises = createInitialExercises();
+    
+    return storedExercises.map(stored => {
+        // Find matching exercise in initial data (for built-in exercises)
+        const initial = initialExercises.find(ex => ex.id === stored.id);
+        
+        // If it's a built-in exercise and has no secondaryMuscleGroups, migrate it
+        if (initial && !stored.isCustom && !stored.secondaryMuscleGroups && initial.secondaryMuscleGroups) {
+            return {
+                ...stored,
+                secondaryMuscleGroups: initial.secondaryMuscleGroups
+            };
+        }
+        
+        return stored;
+    });
+};
+
 export const loadExercises = (): ExerciseDefinition[] => {
     if (!hasStorage()) return createInitialExercises();
     try {
         const stored = window.localStorage.getItem(STORAGE_KEYS.EXERCISES);
-        return stored ? JSON.parse(stored) : createInitialExercises();
+        if (!stored) return createInitialExercises();
+        
+        const parsed = JSON.parse(stored);
+        const migrated = migrateExercises(parsed);
+        
+        // Save migrated data back to localStorage
+        if (JSON.stringify(migrated) !== stored) {
+            window.localStorage.setItem(STORAGE_KEYS.EXERCISES, JSON.stringify(migrated));
+        }
+        
+        return migrated;
     } catch (error) {
         console.error('Failed to load exercises', error);
         return createInitialExercises();
