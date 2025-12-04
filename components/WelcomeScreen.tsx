@@ -27,8 +27,11 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onEnter }) => {
                     <img src="/icon.svg" alt="Logo" className="w-20 h-20" />
                 </div>
 
-                <h1 className="text-4xl font-black text-white mb-2 tracking-tight drop-shadow-lg">
-                    MIN TRENINGS<span className="text-primary">APP</span>
+                <h1 className="text-center mb-2 drop-shadow-lg">
+                    <div className="text-2xl font-light text-slate-300 tracking-widest mb-1">Min</div>
+                    <div className="text-4xl font-black text-white tracking-tight">
+                        TRENINGS<span className="text-primary">APP</span>
+                    </div>
                 </h1>
 
                 <p className="text-slate-300 text-lg font-medium mb-12 max-w-[200px] leading-relaxed drop-shadow-md">
