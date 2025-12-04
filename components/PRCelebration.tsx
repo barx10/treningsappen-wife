@@ -49,12 +49,15 @@ const PRCelebration: React.FC<PRCelebrationProps> = ({ exerciseName, prType, val
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/20"
+      onClick={onClose}
+    >
       {/* Confetti */}
       {confetti.map((particle) => (
         <div
           key={particle.id}
-          className="absolute animate-confetti"
+          className="absolute animate-confetti pointer-events-none"
           style={{
             left: `${particle.x}%`,
             top: '-10%',
@@ -67,7 +70,7 @@ const PRCelebration: React.FC<PRCelebrationProps> = ({ exerciseName, prType, val
       ))}
 
       {/* PR Message */}
-      <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-2xl p-6 shadow-2xl pointer-events-auto animate-bounce-in max-w-sm mx-4">
+      <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-2xl p-6 shadow-2xl max-w-sm mx-4 animate-bounce-in">
         <div className="flex items-center justify-center mb-4">
           <Trophy className="w-16 h-16 text-yellow-200" />
         </div>
@@ -81,6 +84,9 @@ const PRCelebration: React.FC<PRCelebrationProps> = ({ exerciseName, prType, val
         </div>
         <p className="text-center text-sm text-yellow-100 mt-4">
           Du blir sterkere! 💪
+        </p>
+        <p className="text-center text-xs text-yellow-100/70 mt-3">
+          Trykk for å lukke
         </p>
       </div>
 
