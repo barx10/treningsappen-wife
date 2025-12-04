@@ -13,7 +13,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
   {
     id: 'ex_warmup',
     name: 'Oppvarming (Gå + Dynamisk)',
-    muscleGroup: MuscleGroup.FULL_BODY,
+    muscleGroup: MuscleGroup.CARDIO,
     type: ExerciseType.DURATION,
     description: 'Start med 5 min rolig gange. Siste 2 minutter øker du tempoet. Avslutt med armsirkler, hofterotasjoner og lette knebøy.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Oppvarming'
@@ -21,7 +21,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
   {
     id: 'ex_mobility',
     name: 'Mobilitetsøvelser (Tøying)',
-    muscleGroup: MuscleGroup.FULL_BODY,
+    muscleGroup: MuscleGroup.CORE,
     type: ExerciseType.DURATION,
     description: 'Fokuser på dynamisk tøying av hofteleddsbøyer, bryst og bakside lår.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Mobilitet'

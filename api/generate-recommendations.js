@@ -62,7 +62,7 @@ export default async function handler(req, res) {
             session.exercises.forEach(ex => {
                 // Bruk kun gyldige muskelgrupper
                 const validGroups = [
-                  'Bryst', 'Rygg', 'Bein', 'Skuldre', 'Armer', 'Kjerne', 'Kondisjon', 'Fullkropp'
+                  'Bryst', 'Rygg', 'Bein', 'Skuldre', 'Armer', 'Kjerne', 'Kondisjon'
                 ];
                 const muscle = validGroups.includes(ex.muscleGroup) ? ex.muscleGroup : null;
                 if (muscle) {

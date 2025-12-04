@@ -54,7 +54,7 @@ export const getRecommendations = (
     const recommendations: string[] = [];
 
     if (history.length === 0) {
-        return ['🚀 Start uka med en enkel fullkroppsøkt – alt teller!'];
+        return ['🚀 Start uka med en styrkeøkt – alt teller!'];
     }
 
     const now = new Date();

@@ -159,7 +159,7 @@ export function getMuscleGroupEmoji(muscleGroup: MuscleGroup): string {
     [MuscleGroup.ARMS]: '💪',
     [MuscleGroup.CORE]: '🧘',
     [MuscleGroup.CARDIO]: '🏃',
-    [MuscleGroup.FULL_BODY]: '🏋️'
+
   };
   return emojiMap[muscleGroup] || '💪';
 }

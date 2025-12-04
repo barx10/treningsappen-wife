@@ -11,7 +11,7 @@ interface ExerciseFormModalProps {
 const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({ initialExercise, onSave, onClose }) => {
   const [name, setName] = useState(initialExercise?.name || '');
   const [type, setType] = useState<ExerciseType>(initialExercise?.type || ExerciseType.WEIGHTED);
-  const [muscleGroup, setMuscleGroup] = useState<MuscleGroup>(initialExercise?.muscleGroup || MuscleGroup.FULL_BODY);
+  const [muscleGroup, setMuscleGroup] = useState<MuscleGroup>(initialExercise?.muscleGroup || MuscleGroup.CHEST);
   const [description, setDescription] = useState(initialExercise?.description || '');
   const [imageUrl, setImageUrl] = useState(initialExercise?.imageUrl || '');
 
