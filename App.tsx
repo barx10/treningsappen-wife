@@ -35,7 +35,7 @@ import InfoView from './components/InfoView';
 import AgentView from './components/AgentView';
 import HistoryOverviewChart from './components/HistoryOverviewChart';
 import { getRecommendations, getWeeklyStats } from './utils/fitnessCalculations';
-import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell, Lightbulb, Flame, User, RefreshCw, Search, Download } from 'lucide-react';
+import { TrendingUp, Calendar, Play, Heart, Plus, Dumbbell, Lightbulb, Flame, User, RefreshCw, Search, Download, Clock } from 'lucide-react';
 
 export default function App() {
   // --- State ---
