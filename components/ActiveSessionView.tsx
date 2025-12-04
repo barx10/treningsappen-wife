@@ -36,7 +36,15 @@ const ActiveSessionView: React.FC<ActiveSessionViewProps> = ({
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number | null>(null);
   const exerciseRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [prCelebration, setPRCelebration] = useState<{ exerciseName: string; prType: 'weight' | 'reps' | 'volume'; value: number } | null>(null);
-  const personalRecords = calculatePersonalRecords(history, exercises);
+  
+  // Calculate PRs including current session's completed sets
+  const personalRecords = React.useMemo(() => {
+    // Include current session in history for PR calculation if it has completed sets
+    const historyWithCurrent = session && session.exercises.some(ex => ex.sets.some(s => s.completed))
+      ? [...history, { ...session, status: 'Fullført' as const }]
+      : history;
+    return calculatePersonalRecords(historyWithCurrent, exercises);
+  }, [history, exercises, session]);
 
   // Timer Logic
   useEffect(() => {
