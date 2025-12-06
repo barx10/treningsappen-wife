@@ -134,12 +134,22 @@ const AgentView: React.FC<AgentViewProps> = ({ profile, history, exercises, onSt
     const currentExercise = exercises.find(e => e.id === generatedWorkout.exercises[exerciseIndex].exerciseId);
     if (!currentExercise) return;
 
-    // Find alternative exercises from same muscle group (exclude current)
+    // Find alternative exercises from same muscle group (include secondary matches)
     const alternatives = exercises
-      .filter(e => 
-        e.muscleGroup === currentExercise.muscleGroup && 
-        e.id !== currentExercise.id
-      )
+      .filter(e => {
+        if (e.id === currentExercise.id) return false;
+        
+        // Match if primary muscle groups match
+        if (e.muscleGroup === currentExercise.muscleGroup) return true;
+        
+        // Match if current exercise's primary is in alternative's secondaries
+        if (e.secondaryMuscleGroups?.includes(currentExercise.muscleGroup)) return true;
+        
+        // Match if alternative's primary is in current exercise's secondaries
+        if (currentExercise.secondaryMuscleGroups?.includes(e.muscleGroup)) return true;
+        
+        return false;
+      })
       .sort(() => Math.random() - 0.5) // Shuffle
       .slice(0, 3); // Take 3 random alternatives
 

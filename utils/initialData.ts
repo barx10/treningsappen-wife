@@ -183,8 +183,8 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
   {
     id: 'ex_dips',
     name: 'Dips',
-    muscleGroup: MuscleGroup.ARMS,
-    secondaryMuscleGroups: [MuscleGroup.CHEST, MuscleGroup.SHOULDERS],
+    muscleGroup: MuscleGroup.CHEST,
+    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.SHOULDERS],
     type: ExerciseType.BODYWEIGHT,
     description: 'Hold i stengene med strake armer. Senk kroppen ned ved å bøye i albuene til overarmene er parallelle med gulvet. Press opp igjen.',
     imageUrl: 'https://placehold.co/600x400/1e293b/f1f5f9?text=Dips'
