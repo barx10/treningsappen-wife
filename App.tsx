@@ -53,11 +53,11 @@ export default function App() {
   const [loadingAiRecommendations, setLoadingAiRecommendations] = useState(false);
   const [historySearchQuery, setHistorySearchQuery] = useState('');
   const [historyDateFilter, setHistoryDateFilter] = useState<'all' | 'week' | 'month' | '3months'>('all');
-  const [historyDisplayLimit, setHistoryDisplayLimit] = useState(20); // Show 20 at a time
+  const [historyDisplayLimit, setHistoryDisplayLimit] = useState(5); // Show 5 at a time
 
   // Reset display limit when filter or search changes
   useEffect(() => {
-    setHistoryDisplayLimit(20);
+    setHistoryDisplayLimit(5);
   }, [historySearchQuery, historyDateFilter]);
 
   // Ingen automatisk AI-henting
@@ -582,7 +582,7 @@ export default function App() {
             ))}
             {filteredHistory.length > historyDisplayLimit && (
               <button
-                onClick={() => setHistoryDisplayLimit(prev => prev + 20)}
+                onClick={() => setHistoryDisplayLimit(prev => prev + 5)}
                 className="w-full py-3 bg-surface border border-slate-700 text-slate-300 rounded-xl hover:bg-slate-700 hover:text-white transition-colors font-medium"
               >
                 Vis flere ({filteredHistory.length - historyDisplayLimit} til)
