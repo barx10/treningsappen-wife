@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import OpenAI from 'openai';
 
 export default async function handler(req, res) {
     // CORS headers
@@ -24,15 +25,17 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Profile is required' });
         }
 
+        // Determine which AI provider to use
+        const useOpenAI = process.env.AI_PROVIDER === 'openai';
+
         // Validate API key
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = useOpenAI ? process.env.OPENAI_API_KEY : process.env.GEMINI_API_KEY;
         if (!apiKey) {
-            console.error('GEMINI_API_KEY not found in environment variables');
+            console.error(`${useOpenAI ? 'OPENAI' : 'GEMINI'}_API_KEY not found in environment variables`);
             return res.status(500).json({ error: 'API key not configured' });
         }
 
-        console.log('Initializing Gemini AI...');
-        const ai = new GoogleGenAI({ apiKey });
+        console.log(`Using ${useOpenAI ? 'OpenAI' : 'Gemini'} for recommendations...`);
 
         // Helper to parse dates consistently
         const parseDateString = (dateStr) => {
@@ -156,26 +159,44 @@ RETURNER JSON:
   ]
 }Vær kreativ, personlig og gi tips som virkelig hjelper brukeren å nå målet sitt!`;
 
-        console.log('Calling Gemini API for recommendations...');
-        const result = await ai.models.generateContent({
-            model: 'gemini-2.0-flash-001',
-            contents: { parts: [{ text: prompt }] },
-            config: {
-                responseMimeType: 'application/json'
+        let parsed;
+
+        if (useOpenAI) {
+            console.log('Calling OpenAI API for recommendations...');
+            const openai = new OpenAI({ apiKey });
+            
+            const completion = await openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: [{ role: 'user', content: prompt }],
+                response_format: { type: 'json_object' },
+                temperature: 0.7,
+            });
+
+            console.log('OpenAI API response received');
+            parsed = JSON.parse(completion.choices[0].message.content);
+        } else {
+            console.log('Calling Gemini API for recommendations...');
+            const ai = new GoogleGenAI({ apiKey });
+            const result = await ai.models.generateContent({
+                model: 'gemini-2.0-flash-001',
+                contents: { parts: [{ text: prompt }] },
+                config: {
+                    responseMimeType: 'application/json'
+                }
+            });
+
+            console.log('Gemini API response received');
+            const text = result.text;
+            console.log('Raw response:', text);
+
+            parsed = JSON.parse(text);
+            console.log('Parsed response:', parsed);
+
+            // Handle array response (sometimes Gemini returns an array)
+            if (Array.isArray(parsed)) {
+                console.log('Response is array, taking first element');
+                parsed = parsed[0];
             }
-        });
-
-        console.log('Gemini API response received');
-        const text = result.text;
-        console.log('Raw response:', text);
-
-        let parsed = JSON.parse(text);
-        console.log('Parsed response:', parsed);
-
-        // Handle array response (sometimes Gemini returns an array)
-        if (Array.isArray(parsed)) {
-            console.log('Response is array, taking first element');
-            parsed = parsed[0];
         }
 
         if (!parsed.recommendations || !Array.isArray(parsed.recommendations)) {

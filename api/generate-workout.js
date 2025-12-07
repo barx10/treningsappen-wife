@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import OpenAI from 'openai';
 
 export default async function handler(req, res) {
   // Add CORS headers
@@ -25,14 +26,23 @@ export default async function handler(req, res) {
       exercisesCount: availableExercises?.length 
     });
     
+    // Determine which AI provider to use
+    const useOpenAI = process.env.OPENAI_API_KEY && process.env.AI_PROVIDER === 'openai';
+    
     // Validate API key
-    if (!process.env.GEMINI_API_KEY) {
-      console.error('GEMINI_API_KEY is not set');
-      return res.status(500).json({ error: 'API key not configured' });
+    if (useOpenAI) {
+      if (!process.env.OPENAI_API_KEY) {
+        console.error('OPENAI_API_KEY is not set');
+        return res.status(500).json({ error: 'API key not configured' });
+      }
+      console.log('Using OpenAI GPT-4o-mini...');
+    } else {
+      if (!process.env.GEMINI_API_KEY) {
+        console.error('GEMINI_API_KEY is not set');
+        return res.status(500).json({ error: 'API key not configured' });
+      }
+      console.log('Using Google Gemini...');
     }
-
-    console.log('Initializing GoogleGenAI...');
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
     // Helper to parse dates consistently
     const parseDateString = (dateStr) => {
@@ -125,26 +135,44 @@ Returner et JSON-objekt med følgende struktur (BARE JSON, ingen annen tekst):
   "reasoning": "Kort forklaring på hvorfor dette opplegget passer nå (2-3 setninger)"
 }`;
 
-    console.log('Calling Gemini API...');
-    const result = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-001',
-      contents: { parts: [{ text: prompt }] },
-      config: {
-        responseMimeType: 'application/json'
-      }
-    });
+    let workout;
 
-    console.log('Gemini API response received');
-    console.log('Raw result.text:', result.text);
-    
-    let workout = JSON.parse(result.text);
-    console.log('Parsed workout type:', Array.isArray(workout) ? 'array' : 'object');
-    console.log('Parsed workout:', workout);
-    
-    // If Gemini returns an array, take the first item
-    if (Array.isArray(workout)) {
-      console.log('Converting array to object');
-      workout = workout[0];
+    if (useOpenAI) {
+      console.log('Calling OpenAI API...');
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
+        temperature: 0.7,
+      });
+
+      console.log('OpenAI API response received');
+      workout = JSON.parse(completion.choices[0].message.content);
+    } else {
+      console.log('Calling Gemini API...');
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const result = await ai.models.generateContent({
+        model: 'gemini-2.0-flash-001',
+        contents: { parts: [{ text: prompt }] },
+        config: {
+          responseMimeType: 'application/json'
+        }
+      });
+
+      console.log('Gemini API response received');
+      console.log('Raw result.text:', result.text);
+      
+      workout = JSON.parse(result.text);
+      console.log('Parsed workout type:', Array.isArray(workout) ? 'array' : 'object');
+      console.log('Parsed workout:', workout);
+      
+      // If Gemini returns an array, take the first item
+      if (Array.isArray(workout)) {
+        console.log('Converting array to object');
+        workout = workout[0];
+      }
     }
     
     console.log('Final workout:', workout);
