@@ -7,7 +7,6 @@ import {
   ExerciseType
 } from '../types';
 import { Plus, Trash2, Check, Search, X, Clock, TrendingUp } from 'lucide-react';
-import RestTimer from './RestTimer';
 import PRCelebration from './PRCelebration';
 import { calculatePersonalRecords, checkPRStatus } from '../utils/prTracking';
 
@@ -217,11 +216,6 @@ const ActiveSessionView: React.FC<ActiveSessionViewProps> = ({
         >
           Fullfør Økt
         </button>
-      </div>
-
-      {/* Rest Timer - Sticky */}
-      <div className="sticky top-0 z-10 bg-background px-4 pt-4 pb-2 shadow-lg">
-        <RestTimer />
       </div>
 
       {/* Exercises List */}

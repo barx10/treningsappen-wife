@@ -21,8 +21,27 @@ const RestTimer: React.FC<RestTimerProps> = ({ onComplete }) => {
         // Create audio element for completion notification
         audioRef.current = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWi77eafTRAMUKfj8LZjHAY4ktfyzHksBSR3x/DdkEAKFF606+uoVRQKRp/g8r5sIQUrgs7y2Ik2CBlou+3mn00QDFCn4/C2YxwGOJLX8sx5LAUkd8fw3ZBAC');
         
-        // Create beep audio for countdown (simple beep sound)
-        beepAudioRef.current = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWi77eafTRAMUKfj8LZjHAY4ktfyzHksBSR3x/DdkEAKFF606+uoVRQKRp/g8r5sIQUrgs7y2Ik2CBlou+3mn00QDFCn4/C2YxwGOJLX8sx5LAUkd8fw3ZBAC');
+        // Create a more noticeable beep sound using Web Audio API
+        const createBeepSound = () => {
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800; // Higher frequency for beep
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        };
+        
+        // Store beep function
+        (beepAudioRef as any).current = createBeepSound;
     }, []);
 
     useEffect(() => {
@@ -41,9 +60,8 @@ const RestTimer: React.FC<RestTimerProps> = ({ onComplete }) => {
                 // Play beep sound at 3, 2, 1 seconds
                 if (newTimeLeft > 0 && newTimeLeft <= 3 && !hasPlayedBeepsRef.current.has(newTimeLeft)) {
                     hasPlayedBeepsRef.current.add(newTimeLeft);
-                    if (beepAudioRef.current) {
-                        beepAudioRef.current.currentTime = 0;
-                        beepAudioRef.current.play().catch(() => { });
+                    if (beepAudioRef.current && typeof beepAudioRef.current === 'function') {
+                        beepAudioRef.current(); // Call the Web Audio API function
                     }
                 }
 

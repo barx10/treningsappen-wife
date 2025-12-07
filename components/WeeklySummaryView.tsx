@@ -109,7 +109,7 @@ const WeeklySummaryView: React.FC<WeeklySummaryViewProps> = ({ history, profile,
       return {
         emoji: '🔥',
         title: 'Du er ustoppelig!',
-        message: 'Dette er elitetrening! Med denne frekvensen og volumet er du på vei mot utrolige resultater. Du viser en dedikasjon som få besitter. Fortsett å dominere!'
+        message: `Wow! ${totalWorkouts} økter og ${totalSets} sett denne uken - det er elitetrening! Med ${Math.round(totalVolume)}kg totalt volum viser du en dedikasjon som inspirerer. Du pusher grenser og bygger en versjon av deg selv som er sterkere for hver dag. Fortsett å dominere! 💯`
       };
     }
 
@@ -118,7 +118,7 @@ const WeeklySummaryView: React.FC<WeeklySummaryViewProps> = ({ history, profile,
       return {
         emoji: '💪',
         title: 'Fantastisk uke!',
-        message: 'Du har virkelig levert denne uken! Konsistens er nøkkelen til suksess, og du beviser det hver dag. Kroppen din vil takke deg for innsatsen.'
+        message: `${totalWorkouts} kvalitetsøkter med ${totalSets} sett - du har virkelig levert! Konsistens er supertrikset, og du beviser at du mestrer det. Hver rep, hvert sett - kroppen din absorberer styrken. Du er på rett vei mot noe stort! 🚀`
       };
     }
 
@@ -127,7 +127,7 @@ const WeeklySummaryView: React.FC<WeeklySummaryViewProps> = ({ history, profile,
       return {
         emoji: '🎯',
         title: 'Solid fremgang!',
-        message: 'Tre eller flere økter på en uke? Det er det som bygger styrke og vaner! Du er godt på vei mot målene dine. Hver økt teller!'
+        message: `${totalWorkouts} økter på en uke er akkurat det som bygger ekte styrke! Du har trent ${stats.uniqueExercises} forskjellige øvelser og lagt ned ${totalSets} sett. Det er ikke bare tall - det er bevis på at du satser. Hver økt er en investering i fremtidens deg! 💎`
       };
     }
 
@@ -136,15 +136,15 @@ const WeeklySummaryView: React.FC<WeeklySummaryViewProps> = ({ history, profile,
       return {
         emoji: '🌟',
         title: 'Flott start!',
-        message: 'Å komme i gang er ofte det vanskeligste. Du har tatt første steg, og det er noe å være stolt av! Husk at små steg leder til store forandringer.'
+        message: `${totalWorkouts} ${totalWorkouts === 1 ? 'økt' : 'økter'} fullført - det som betyr mest er at du tok steget! ${totalSets} sett er ${totalSets} ganger du valgte fremgang. Å komme i gang er ofte det tøffeste. Du har brutt inertien. Nå handler det bare om å holde momentumet! Keep going! ⭐`
       };
     }
 
     // No workouts
     return {
       emoji: '💡',
-      title: 'Ny uke, ny sjanse!',
-      message: 'Forrige uke er historie. Denne uken er din mulighet til å vise hva du er laget av. Start i dag - din fremtidige jeg vil takke deg!'
+      title: 'Klar for en ny start?',
+      message: 'Forrige uke er historie - og det er helt greit! Livet skjer. Men DENNE uken? Den er din. Ett sett, én øvelse, én push-up - det er alt som skal til for å sparke i gang motoren igjen. Din fremtidige jeg vil takke deg for at du starter NÅ! 🔋'
     };
   };
 

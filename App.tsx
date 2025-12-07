@@ -32,6 +32,7 @@ import ExerciseDetailModal from './components/ExerciseDetailModal';
 import ExerciseFormModal from './components/ExerciseFormModal';
 import WelcomeScreen from './components/WelcomeScreen';
 import RecoveryInsights from './components/RecoveryInsights';
+import RestTimer from './components/RestTimer';
 
 // Lazy load heavy components
 const ProfileView = lazy(() => import('./components/ProfileView'));
@@ -747,6 +748,13 @@ export default function App() {
 
   return (
     <div className="h-screen w-full max-w-md mx-auto bg-background relative shadow-2xl font-sans overflow-hidden">
+      {/* Global Rest Timer - Shows when there's an active session */}
+      {activeSession && (
+        <div className="sticky top-0 z-50 bg-background px-4 pt-4 pb-2 shadow-lg border-b border-slate-700">
+          <RestTimer />
+        </div>
+      )}
+      
       <div className="h-full overflow-y-auto scrollbar-hide">
         {currentScreen === Screen.HOME && renderHome()}
         {currentScreen === Screen.HISTORY && renderHistory()}
