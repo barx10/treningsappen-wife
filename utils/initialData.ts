@@ -100,7 +100,7 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
   },
   {
     id: 'ex_deadlift',
-    name: 'Markløft (KB/Stang)',
+    name: 'Markløft',
     muscleGroup: MuscleGroup.BACK,
     secondaryMuscleGroups: [MuscleGroup.LEGS, MuscleGroup.CORE],
     type: ExerciseType.WEIGHTED,
