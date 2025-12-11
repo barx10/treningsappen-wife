@@ -24,6 +24,7 @@ import {
 } from './utils/storage';
 import { loadProfile, saveProfile } from './utils/profileStorage';
 import { getTodayDateString } from './utils/dateUtils';
+import { calculateWeeklyVolume } from './utils/fitnessCalculations';
 import BottomNav from './components/BottomNav';
 import ExerciseCard from './components/ExerciseCard';
 import WorkoutHistoryCard from './components/WorkoutHistoryCard';
@@ -337,42 +338,7 @@ export default function App() {
                   <span className="font-bold text-[10px] uppercase tracking-wide">Løftet</span>
                 </div>
                 <div className="text-xl font-bold text-white">
-                  {(() => {
-                    // Get start of week (Monday)
-                    const getStartOfWeek = () => {
-                      const d = new Date();
-                      const day = d.getDay();
-                      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-                      d.setDate(diff);
-                      d.setHours(0, 0, 0, 0);
-                      return d;
-                    };
-
-                    const parseDateString = (dateStr: string): Date => {
-                      if (dateStr.length === 10 && dateStr.includes('-')) {
-                        const [year, month, day] = dateStr.split('-').map(Number);
-                        return new Date(year, month - 1, day);
-                      }
-                      const date = new Date(dateStr);
-                      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                    };
-
-                    const startOfWeek = getStartOfWeek();
-                    const weekSessions = history.filter(s => {
-                      const sessionDate = parseDateString(s.date);
-                      return sessionDate >= startOfWeek && s.status === 'Fullført';
-                    });
-
-                    const volume = weekSessions.reduce((total, session) => {
-                      return total + session.exercises.reduce((vol, ex) => {
-                        return vol + ex.sets.reduce((sVol, set) => {
-                          if (!set.completed || !set.weight || !set.reps) return sVol;
-                          return sVol + (set.weight * set.reps);
-                        }, 0);
-                      }, 0);
-                    }, 0);
-                    return (volume / 1000).toFixed(1);
-                  })()}
+                  {calculateWeeklyVolume(history)}
                   <span className="text-xs text-muted font-normal ml-1">tonn</span>
                 </div>
               </div>
