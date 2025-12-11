@@ -2,6 +2,35 @@ import { UserProfile, WorkoutSession, ExerciseDefinition, ExerciseType, MuscleGr
 import { getStartOfWeek, isYesterday, parseDateString } from './dateUtils';
 
 /**
+ * Calculate total volume (weight × reps) lifted in the current week
+ * Returns volume in tonnes (kilograms / 1000)
+ */
+export const calculateWeeklyVolume = (history: WorkoutSession[]): number => {
+    const startOfWeek = getStartOfWeek();
+
+    const weekSessions = history.filter(session => {
+        const sessionDate = parseDateString(session.date);
+        return sessionDate >= startOfWeek && session.status === 'Fullført';
+    });
+
+    const totalVolume = weekSessions.reduce((sessionTotal, session) => {
+        const sessionVolume = session.exercises.reduce((exerciseTotal, exercise) => {
+            const exerciseVolume = exercise.sets.reduce((setTotal, set) => {
+                if (!set.completed || !set.weight || !set.reps) {
+                    return setTotal;
+                }
+                return setTotal + (set.weight * set.reps);
+            }, 0);
+            return exerciseTotal + exerciseVolume;
+        }, 0);
+        return sessionTotal + sessionVolume;
+    }, 0);
+
+    // Convert to tonnes and round to 1 decimal place
+    return Number((totalVolume / 1000).toFixed(1));
+};
+
+/**
  * Calculate estimated calories burned during a workout session
  * Based on MET (Metabolic Equivalent of Task) values
  */
