@@ -178,7 +178,7 @@ RETURNER JSON:
             console.log('Calling Gemini API for recommendations...');
             const ai = new GoogleGenAI({ apiKey });
             const result = await ai.models.generateContent({
-                model: 'gemini-2.0-flash-001',
+                model: 'gemini-3-flash-preview',
                 contents: { parts: [{ text: prompt }] },
                 config: {
                     responseMimeType: 'application/json'
