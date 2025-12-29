@@ -9,6 +9,7 @@ import {
 import { Plus, Trash2, Check, Search, X, Clock, TrendingUp } from 'lucide-react';
 import PRCelebration from './PRCelebration';
 import { calculatePersonalRecords, checkPRStatus } from '../utils/prTracking';
+import RestTimer from './RestTimer';
 
 interface ActiveSessionViewProps {
   session: WorkoutSession | null;
@@ -202,20 +203,25 @@ const ActiveSessionView: React.FC<ActiveSessionViewProps> = ({
   return (
     <div className="pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-slate-800 p-4 flex justify-between items-center shadow-md">
-        <div>
-          <h2 className="font-bold text-lg text-white">{session.name}</h2>
-          <div className="text-secondary font-mono text-sm font-medium flex items-center">
-            <Clock size={14} className="mr-1" />
-            {formatTime(elapsedTime)}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-slate-800 shadow-md">
+        <div className="p-4 flex justify-between items-center">
+          <div>
+            <h2 className="font-bold text-lg text-white">{session.name}</h2>
+            <div className="text-secondary font-mono text-sm font-medium flex items-center">
+              <Clock size={14} className="mr-1" />
+              {formatTime(elapsedTime)}
+            </div>
           </div>
+          <button
+            onClick={onFinishSession}
+            className="bg-secondary text-surface px-5 py-2 rounded-full font-bold text-sm hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-900/20"
+          >
+            Fullfør Økt
+          </button>
         </div>
-        <button
-          onClick={onFinishSession}
-          className="bg-secondary text-surface px-5 py-2 rounded-full font-bold text-sm hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-900/20"
-        >
-          Fullfør Økt
-        </button>
+        <div className="px-4 pb-3">
+          <RestTimer />
+        </div>
       </div>
 
       {/* Exercises List */}
