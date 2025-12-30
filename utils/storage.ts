@@ -6,14 +6,16 @@ const hasStorage = () => typeof window !== 'undefined' && typeof window.localSto
 
 /**
  * Migrate stored exercises to always use latest data from initialData for built-in exercises
+ * Also adds any new exercises that don't exist in localStorage yet
  */
 const migrateExercises = (storedExercises: ExerciseDefinition[]): ExerciseDefinition[] => {
     const initialExercises = createInitialExercises();
-    
-    return storedExercises.map(stored => {
+
+    // Update existing exercises with latest data from initialData
+    const updatedExercises = storedExercises.map(stored => {
         // Find matching exercise in initial data (for built-in exercises)
         const initial = initialExercises.find(ex => ex.id === stored.id);
-        
+
         // If it's a built-in exercise, use all data from initial except user stats
         if (initial && !stored.isCustom) {
             return {
@@ -24,9 +26,16 @@ const migrateExercises = (storedExercises: ExerciseDefinition[]): ExerciseDefini
                 totalSessions: stored.totalSessions,
             };
         }
-        
+
         return stored;
     });
+
+    // Find new exercises that don't exist in stored data yet
+    const storedIds = new Set(storedExercises.map(ex => ex.id));
+    const newExercises = initialExercises.filter(ex => !storedIds.has(ex.id));
+
+    // Return updated exercises + new exercises
+    return [...updatedExercises, ...newExercises];
 };
 
 export const loadExercises = (): ExerciseDefinition[] => {
