@@ -582,15 +582,15 @@ export default function App() {
   };
 
   const renderExercises = () => {
-    // Kategori-info med emojis og farger
-    const categoryInfo: Record<MuscleGroup, { emoji: string; color: string; bgColor: string }> = {
-      [MuscleGroup.CHEST]: { emoji: '💪', color: 'text-red-400', bgColor: 'bg-red-500/20' },
-      [MuscleGroup.BACK]: { emoji: '🦴', color: 'text-blue-400', bgColor: 'bg-blue-500/20' },
-      [MuscleGroup.SHOULDERS]: { emoji: '🎯', color: 'text-purple-400', bgColor: 'bg-purple-500/20' },
-      [MuscleGroup.ARMS]: { emoji: '💪', color: 'text-yellow-400', bgColor: 'bg-yellow-500/20' },
-      [MuscleGroup.LEGS]: { emoji: '🦵', color: 'text-green-400', bgColor: 'bg-green-500/20' },
-      [MuscleGroup.CORE]: { emoji: '🔥', color: 'text-orange-400', bgColor: 'bg-orange-500/20' },
-      [MuscleGroup.CARDIO]: { emoji: '❤️', color: 'text-pink-400', bgColor: 'bg-pink-500/20' },
+    // Kategori-info med farger
+    const categoryInfo: Record<MuscleGroup, { color: string; bgColor: string; iconColor: string }> = {
+      [MuscleGroup.CHEST]: { color: 'text-red-400', bgColor: 'bg-red-500/20', iconColor: 'text-red-400' },
+      [MuscleGroup.BACK]: { color: 'text-blue-400', bgColor: 'bg-blue-500/20', iconColor: 'text-blue-400' },
+      [MuscleGroup.SHOULDERS]: { color: 'text-purple-400', bgColor: 'bg-purple-500/20', iconColor: 'text-purple-400' },
+      [MuscleGroup.ARMS]: { color: 'text-yellow-400', bgColor: 'bg-yellow-500/20', iconColor: 'text-yellow-400' },
+      [MuscleGroup.LEGS]: { color: 'text-green-400', bgColor: 'bg-green-500/20', iconColor: 'text-green-400' },
+      [MuscleGroup.CORE]: { color: 'text-orange-400', bgColor: 'bg-orange-500/20', iconColor: 'text-orange-400' },
+      [MuscleGroup.CARDIO]: { color: 'text-pink-400', bgColor: 'bg-pink-500/20', iconColor: 'text-pink-400' },
     };
 
     // Tell antall øvelser per kategori
@@ -627,7 +627,7 @@ export default function App() {
                   onClick={() => setSelectedMuscleGroup(group)}
                   className={`${info.bgColor} border border-slate-700 rounded-xl p-4 text-left hover:scale-[1.02] transition-transform active:scale-[0.98]`}
                 >
-                  <div className="text-3xl mb-2">{info.emoji}</div>
+                  <Dumbbell size={28} className={`${info.iconColor} mb-2`} />
                   <div className={`font-bold ${info.color}`}>{group}</div>
                   <div className="text-muted text-sm">{count} øvelser</div>
                 </button>
@@ -654,11 +654,14 @@ export default function App() {
           >
             <ChevronLeft size={24} className="text-white" />
           </button>
-          <div className="flex-1">
-            <h1 className={`text-2xl font-bold ${info.color}`}>
-              {info.emoji} {selectedMuscleGroup}
-            </h1>
-            <p className="text-muted text-sm">{filteredExercises.length} øvelser</p>
+          <div className="flex-1 flex items-center gap-3">
+            <Dumbbell size={24} className={info.iconColor} />
+            <div>
+              <h1 className={`text-2xl font-bold ${info.color}`}>
+                {selectedMuscleGroup}
+              </h1>
+              <p className="text-muted text-sm">{filteredExercises.length} øvelser</p>
+            </div>
           </div>
           <button
             onClick={() => setIsCreatingExercise(true)}
