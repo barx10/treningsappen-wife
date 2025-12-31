@@ -374,15 +374,6 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
 
   // --- Flere Brystøvelser ---
   {
-    id: 'ex_decline_press',
-    name: 'Decline Benkpress',
-    muscleGroup: MuscleGroup.CHEST,
-    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.SHOULDERS],
-    type: ExerciseType.WEIGHTED,
-    description: 'Ligg på en skråbenk med hodet lavere enn føttene. Senk stangen kontrollert ned til nedre del av brystet. Press stangen opp til armene er strake.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Decline-Barbell-Bench-Press.gif'
-  },
-  {
     id: 'ex_pec_deck',
     name: 'Pec Deck / Butterfly',
     muscleGroup: MuscleGroup.CHEST,
@@ -463,15 +454,6 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     type: ExerciseType.WEIGHTED,
     description: 'Stå foran en kabelstasjon. Med strake armer, trekk stangen ned mot lårene. Hold magen stram og fokuser på å bruke latissimus.',
     imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/06/Rope-Straight-Arm-Pulldown.gif'
-  },
-  {
-    id: 'ex_chinup',
-    name: 'Chin-ups',
-    muscleGroup: MuscleGroup.BACK,
-    secondaryMuscleGroups: [MuscleGroup.ARMS],
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Heng i stangen med underhåndsgrep (håndflater mot deg). Trekk deg opp til haken er over stangen. Senk deg kontrollert ned.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Chin-up.gif'
   },
   {
     id: 'ex_shrug',
@@ -571,14 +553,6 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     type: ExerciseType.WEIGHTED,
     description: 'Plasser en stang på øvre rygg. Med lett bøy i knærne, bøy fremover i hoften til overkroppen er nesten parallell med gulvet. Reis deg opp igjen.',
     imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Good-Morning.gif'
-  },
-  {
-    id: 'ex_adductor',
-    name: 'Adduktor Maskin',
-    muscleGroup: MuscleGroup.LEGS,
-    type: ExerciseType.WEIGHTED,
-    description: 'Sitt i maskinen med beina spredt. Press beina sammen mot hverandre. Returner kontrollert til start.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Hip-Adduction-Machine.gif'
   },
   {
     id: 'ex_abductor',
@@ -708,14 +682,6 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
 
   // --- Flere Kjerneøvelser ---
   {
-    id: 'ex_crunch',
-    name: 'Crunches',
-    muscleGroup: MuscleGroup.CORE,
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Ligg på ryggen med bøyde knær. Løft skuldrene opp fra gulvet ved å stramme magen. Senk kontrollert ned.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Crunch.gif'
-  },
-  {
     id: 'ex_leg_raise',
     name: 'Liggende Benhev',
     muscleGroup: MuscleGroup.CORE,
@@ -739,15 +705,6 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     type: ExerciseType.BODYWEIGHT,
     description: 'Ligg på ryggen med hendene bak hodet. Roter overkroppen og før albuen mot motsatt kne mens du strekker det andre beinet. Bytt side.',
     imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Bicycle-Crunch.gif'
-  },
-  {
-    id: 'ex_mountain_climber',
-    name: 'Mountain Climbers',
-    muscleGroup: MuscleGroup.CORE,
-    secondaryMuscleGroups: [MuscleGroup.CARDIO, MuscleGroup.SHOULDERS],
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Start i push-up posisjon. Trekk knærne vekselvis inn mot brystet i et raskt tempo. Hold kroppen stabil.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Mountain-Climber.gif'
   },
   {
     id: 'ex_cable_crunch',
@@ -782,87 +739,8 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     description: 'Start på alle fire. Strekk motsatt arm og bein ut i en linje. Hold i 2-3 sekunder. Bytt side.',
     imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2022/07/Bird-Dog.gif'
   },
-  {
-    id: 'ex_pallof_press',
-    name: 'Pallof Press',
-    muscleGroup: MuscleGroup.CORE,
-    type: ExerciseType.WEIGHTED,
-    description: 'Stå sidelengs mot en kabel i brysthøyde. Hold håndtaket mot brystet. Press armene rett frem og hold. Motstå rotasjonen.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/pallof-press.gif'
-  },
 
   // --- Flere Kondisjons- og Plyometriske Øvelser ---
-  {
-    id: 'ex_jumping_jack',
-    name: 'Jumping Jacks',
-    muscleGroup: MuscleGroup.CARDIO,
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Start med føttene sammen og armene langs siden. Hopp ut til bena er bredt og armene over hodet. Hopp tilbake til start.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Jumping-Jack.gif'
-  },
-  {
-    id: 'ex_burpee',
-    name: 'Burpees',
-    muscleGroup: MuscleGroup.CARDIO,
-    secondaryMuscleGroups: [MuscleGroup.CHEST, MuscleGroup.LEGS, MuscleGroup.CORE],
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Gå ned i push-up posisjon. Utfør en push-up. Hopp føttene frem mot hendene. Hopp opp med armene over hodet.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Burpee.gif'
-  },
-  {
-    id: 'ex_box_jump',
-    name: 'Box Jumps',
-    muscleGroup: MuscleGroup.LEGS,
-    secondaryMuscleGroups: [MuscleGroup.CARDIO],
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Stå foran en kasse. Svinge armene og hopp opp på kassen. Land mykt med bøyde knær. Steg ned og gjenta.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Box-Jump.gif'
-  },
-  {
-    id: 'ex_jump_rope',
-    name: 'Hopptau',
-    muscleGroup: MuscleGroup.CARDIO,
-    secondaryMuscleGroups: [MuscleGroup.LEGS],
-    type: ExerciseType.DURATION,
-    description: 'Hopp over tauet med lette hopp på tærne. Hold albuene nær kroppen og roter tauet med håndleddene.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Jump-Rope.gif'
-  },
-  {
-    id: 'ex_high_knees',
-    name: 'Høye Kneløft',
-    muscleGroup: MuscleGroup.CARDIO,
-    secondaryMuscleGroups: [MuscleGroup.LEGS, MuscleGroup.CORE],
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Løft knærne høyt vekselvis i et raskt tempo. Pump armene som ved løping. Hold overkroppen oppreist.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/High-Knee-Run.gif'
-  },
-  {
-    id: 'ex_battle_ropes',
-    name: 'Battle Ropes',
-    muscleGroup: MuscleGroup.CARDIO,
-    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.SHOULDERS, MuscleGroup.CORE],
-    type: ExerciseType.DURATION,
-    description: 'Hold ett tau i hver hånd. Lag bølger ved å bevege armene opp og ned vekselvis. Kan også gjøres samtidig eller sidelengs.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/08/Battle-Rope.gif'
-  },
-  {
-    id: 'ex_kettlebell_swing',
-    name: 'Kettlebell Swing',
-    muscleGroup: MuscleGroup.LEGS,
-    secondaryMuscleGroups: [MuscleGroup.BACK, MuscleGroup.CORE, MuscleGroup.SHOULDERS],
-    type: ExerciseType.WEIGHTED,
-    description: 'Stå med bena i hoftebredde. Svinge kettlebellen mellom beina og opp til brysthøyde ved å drive hoften fremover. Kontroller ned.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/Kettlebell-Swing.gif'
-  },
-  {
-    id: 'ex_squat_jump',
-    name: 'Squat Jumps',
-    muscleGroup: MuscleGroup.LEGS,
-    secondaryMuscleGroups: [MuscleGroup.CARDIO],
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Utfør en vanlig knebøy. Fra bunnen, eksploder opp i et hopp. Land mykt og gå rett ned i neste rep.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Squat-Jump.gif'
-  },
   {
     id: 'ex_lunge_jump',
     name: 'Jumping Lunges',
@@ -872,35 +750,8 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     description: 'Start i utfallsposisjon. Hopp opp og bytt bein i luften. Land i utfall med motsatt bein foran.',
     imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/05/Split-Squat.gif'
   },
-  {
-    id: 'ex_sprint',
-    name: 'Sprint',
-    muscleGroup: MuscleGroup.CARDIO,
-    secondaryMuscleGroups: [MuscleGroup.LEGS],
-    type: ExerciseType.CARDIO,
-    description: 'Løp så fort du kan over en kort distanse (20-100m). Fullt fokus på maksimal hastighet.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/10/Sprinting.gif'
-  },
-  {
-    id: 'ex_farmer_walk',
-    name: 'Farmer\'s Walk',
-    muscleGroup: MuscleGroup.CORE,
-    secondaryMuscleGroups: [MuscleGroup.ARMS, MuscleGroup.LEGS, MuscleGroup.BACK],
-    type: ExerciseType.WEIGHTED,
-    description: 'Hold tunge vekter i hver hånd. Gå med korte, kontrollerte skritt. Hold ryggen rett og skuldrene tilbake.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Farmers-Walk.gif'
-  },
 
   // === HELKROPP ===
-  {
-    id: 'ex_burpee',
-    name: 'Burpees',
-    muscleGroup: MuscleGroup.FULL_BODY,
-    secondaryMuscleGroups: [MuscleGroup.CHEST, MuscleGroup.LEGS, MuscleGroup.CORE],
-    type: ExerciseType.BODYWEIGHT,
-    description: 'Start stående. Gå ned i push-up posisjon, gjør en push-up. Hopp føttene frem og eksploder opp i et hopp med armene over hodet.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Burpee.gif'
-  },
   {
     id: 'ex_thruster',
     name: 'Thrusters',
@@ -918,15 +769,6 @@ export const createInitialExercises = (): ExerciseDefinition[] => [
     type: ExerciseType.WEIGHTED,
     description: 'Løft vekten fra gulvet til skuldrene (clean), deretter press den over hodet. Senk kontrollert tilbake.',
     imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/Barbell-Clean-and-Press-.gif'
-  },
-  {
-    id: 'ex_kettlebell_swing',
-    name: 'Kettlebell Swing',
-    muscleGroup: MuscleGroup.FULL_BODY,
-    secondaryMuscleGroups: [MuscleGroup.BACK, MuscleGroup.LEGS, MuscleGroup.CORE],
-    type: ExerciseType.WEIGHTED,
-    description: 'Hold kettlebellen med begge hender. Sving den mellom beina og bruk hofteekstensjon til å drive den opp til brysthøyde. Hold armene strake.',
-    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/Kettlebell-Swing.gif'
   },
   {
     id: 'ex_man_maker',
