@@ -65,8 +65,33 @@ PROFIL:
 DENNE UKENS TRENING:
 ${weekHistory.length > 0 ? weekHistory.map((s) => {
   const sessionDate = parseDateString(s.date);
-  return `- ${sessionDate.toLocaleDateString('nb-NO')}: ${s.exercises.map((e) => `${e.name} (${e.muscleGroup}, ${e.sets} sett)`).join(', ')}`;
+  const sessionVolume = s.exercises.reduce((sum, e) => sum + (e.totalVolume || 0), 0);
+  return `
+📅 ${sessionDate.toLocaleDateString('nb-NO')} (Totalt volum: ${Math.round(sessionVolume)} kg):
+${s.exercises.map((e) => {
+  const setInfo = e.setDetails?.length > 0
+    ? e.setDetails.map(set => `${set.weight}kg×${set.reps}`).join(', ')
+    : 'Ingen data';
+  return `  • ${e.name} (${e.muscleGroup}): ${e.setsCompleted || e.sets || 0} sett, maks ${e.maxWeight || 0}kg, ${e.totalReps || 0} reps, ${Math.round(e.totalVolume || 0)}kg volum [${setInfo}]`;
+}).join('\n')}`;
 }).join('\n') : '- Ingen økter denne uken'}
+
+UKENS STATISTIKK:
+${(() => {
+  if (weekHistory.length === 0) return '- Ingen data';
+  const totalSets = weekHistory.reduce((sum, s) => sum + s.exercises.reduce((eSum, e) => eSum + (e.setsCompleted || e.sets || 0), 0), 0);
+  const totalVolume = weekHistory.reduce((sum, s) => sum + s.exercises.reduce((eSum, e) => eSum + (e.totalVolume || 0), 0), 0);
+  const totalReps = weekHistory.reduce((sum, s) => sum + s.exercises.reduce((eSum, e) => eSum + (e.totalReps || 0), 0), 0);
+  const muscleGroups = {};
+  weekHistory.forEach(s => s.exercises.forEach(e => {
+    muscleGroups[e.muscleGroup] = (muscleGroups[e.muscleGroup] || 0) + (e.totalVolume || 0);
+  }));
+  return `- Antall økter: ${weekHistory.length}
+- Totalt sett: ${totalSets}
+- Totalt reps: ${totalReps}
+- Totalt volum: ${Math.round(totalVolume)} kg
+- Volum per muskelgruppe: ${Object.entries(muscleGroups).map(([m, v]) => `${m}: ${Math.round(v)}kg`).join(', ')}`;
+})()}
 
 TILGJENGELIGE ØVELSER:
 ${availableExercises.map((e) => `- ${e.name} (${e.muscleGroup}, ${e.type}) [ID: ${e.id}]`).join('\n')}
