@@ -96,11 +96,25 @@ const AgentView: React.FC<AgentViewProps> = ({ profile, history, exercises, onSt
             date: s.date,
             exercises: s.exercises.map(e => {
               const def = exercises.find(ex => ex.id === e.exerciseDefinitionId);
+              const completedSets = e.sets.filter(set => set.completed);
+              const totalVolume = completedSets.reduce((sum, set) =>
+                sum + ((set.weight || 0) * (set.reps || 0)), 0);
+              const maxWeight = Math.max(...completedSets.map(set => set.weight || 0), 0);
+              const totalReps = completedSets.reduce((sum, set) => sum + (set.reps || 0), 0);
+
               return {
                 name: def?.name || 'Unknown',
                 muscleGroup: def?.muscleGroup || 'Unknown',
                 type: def?.type || 'Unknown',
-                sets: e.sets.length,
+                setsCompleted: completedSets.length,
+                setsPlanned: e.sets.length,
+                totalReps,
+                maxWeight,
+                totalVolume,
+                setDetails: completedSets.map(set => ({
+                  weight: set.weight || 0,
+                  reps: set.reps || 0,
+                })),
               };
             }),
           })),

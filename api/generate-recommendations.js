@@ -69,31 +69,51 @@ export default async function handler(req, res) {
             ...session,
             exercises: session.exercises.map(ex => {
                 const definition = exercises?.find(e => e.id === ex.exerciseDefinitionId);
+                const completedSets = (ex.sets || []).filter(set => set.completed);
+                const exerciseVolume = completedSets.reduce((sum, set) =>
+                    sum + ((set.weight || 0) * (set.reps || 0)), 0);
+                const maxWeight = Math.max(...completedSets.map(set => set.weight || 0), 0);
+                const totalReps = completedSets.reduce((sum, set) => sum + (set.reps || 0), 0);
+
                 return {
                     ...ex,
                     name: definition?.name || 'Ukjent øvelse',
                     muscleGroup: definition?.muscleGroup || null,
-                    type: definition?.type || null
+                    type: definition?.type || null,
+                    setsCompleted: completedSets.length,
+                    totalReps,
+                    maxWeight,
+                    exerciseVolume,
+                    setDetails: completedSets.map(set => ({
+                        weight: set.weight || 0,
+                        reps: set.reps || 0,
+                    })),
                 };
             })
         }));
 
         // Analyser treningshistorikk
         const muscleGroupCounts = {};
-        let totalVolume = 0;
+        const muscleGroupVolume = {};
+        let totalSets = 0;
+        let totalVolumeKg = 0;
+        let totalReps = 0;
         let cardioSessions = 0;
 
         enrichedHistory.forEach(session => {
             session.exercises.forEach(ex => {
                 // Bruk kun gyldige muskelgrupper
                 const validGroups = [
-                  'Bryst', 'Rygg', 'Bein', 'Skuldre', 'Armer', 'Kjerne', 'Kondisjon'
+                  'Bryst', 'Rygg', 'Bein', 'Skuldre', 'Armer', 'Kjerne', 'Kondisjon', 'Helkropp'
                 ];
                 const muscle = validGroups.includes(ex.muscleGroup) ? ex.muscleGroup : null;
                 if (muscle) {
                   muscleGroupCounts[muscle] = (muscleGroupCounts[muscle] || 0) + 1;
+                  muscleGroupVolume[muscle] = (muscleGroupVolume[muscle] || 0) + (ex.exerciseVolume || 0);
                 }
-                totalVolume += ex.sets?.length || 0;
+                totalSets += ex.setsCompleted || 0;
+                totalVolumeKg += ex.exerciseVolume || 0;
+                totalReps += ex.totalReps || 0;
                 if (ex.type === 'CARDIO' || ex.type === 'Kardio') cardioSessions++;
             });
         });        const prompt = `Du er en erfaren personlig trener med fokus på langsiktig, bærekraftig progresjon.
@@ -109,16 +129,24 @@ ${exerciseList}
 
 TRENINGSAKTIVITET SISTE 7 DAGER:
 - Antall økter: ${weekHistory.length}
-- Totalt antall sett: ${totalVolume}
+- Totalt antall sett: ${totalSets}
+- Totalt antall reps: ${totalReps}
+- Totalt volum: ${Math.round(totalVolumeKg)} kg
 - Cardio-økter: ${cardioSessions}
-- Muskelgrupper trent: ${Object.entries(muscleGroupCounts).map(([m, c]) => `${m} (${c}x)`).join(', ') || 'Ingen'}
+- Muskelgrupper trent: ${Object.entries(muscleGroupCounts).map(([m, c]) => `${m} (${c} øvelser, ${Math.round(muscleGroupVolume[m] || 0)}kg)`).join(', ') || 'Ingen'}
 
 DETALJERT HISTORIKK:
 ${enrichedHistory.length > 0 ? enrichedHistory.map((s, i) => {
     const sessionDate = parseDateString(s.date);
+    const sessionVolume = s.exercises.reduce((sum, e) => sum + (e.exerciseVolume || 0), 0);
     return `
-Økt ${i + 1} - ${sessionDate.toLocaleDateString('nb-NO')}:
-${s.exercises.map(e => `  • ${e.name} (${e.muscleGroup}): ${e.sets?.length || 0} sett`).join('\n')}
+📅 Økt ${i + 1} - ${sessionDate.toLocaleDateString('nb-NO')} (Totalt: ${Math.round(sessionVolume)}kg):
+${s.exercises.map(e => {
+    const setInfo = e.setDetails?.length > 0
+        ? e.setDetails.map(set => `${set.weight}kg×${set.reps}`).join(', ')
+        : 'Ingen data';
+    return `  • ${e.name} (${e.muscleGroup}): ${e.setsCompleted || 0} sett, maks ${e.maxWeight || 0}kg, ${e.totalReps || 0} reps, ${Math.round(e.exerciseVolume || 0)}kg [${setInfo}]`;
+}).join('\n')}
 `;
 }).join('\n') : 'Ingen økter denne uken'}
 
@@ -151,13 +179,16 @@ FOKUSOMRÅDER Å VURDERE:
 RETURNER JSON:
 {
   "recommendations": [
-    "📊 Volum & Intensitet: Du har trent [antall] økter med [X] sett denne uken. For ditt mål om [mål] anbefaler jeg å...",
-    "💪 Muskelbalanse: Jeg ser at du har trent [muskel X] [antall] ganger, men [muskel Y] bare [antall]. Neste uke bør du...",
-    "🍽️ Ernæring: Med [mål] som mål og [vekt] kg kroppsvekt, bør du...",
-    "⚡ Progresjon: For å fortsette å utvikle deg, prøv å...",
-    "🧘 Restitusjon: Basert på [frekvens] økter denne uken..."
+    "📊 Volum & Intensitet: Du har trent ${weekHistory.length} økter med ${totalSets} sett og løftet ${Math.round(totalVolumeKg)}kg denne uken. For ditt mål om [mål] anbefaler jeg å...",
+    "💪 Muskelbalanse: Jeg ser at du har trent [muskel X] med [Y]kg volum, men [muskel Z] bare [W]kg. Neste uke bør du...",
+    "🍽️ Ernæring: Med [mål] som mål og [vekt] kg kroppsvekt, og ${Math.round(totalVolumeKg)}kg treningsvolum, bør du...",
+    "⚡ Progresjon: For å fortsette å utvikle deg, prøv å øke vektene på [øvelse] fra [nåværende maks]kg til...",
+    "🧘 Restitusjon: Basert på ${weekHistory.length} økter og ${Math.round(totalVolumeKg)}kg volum denne uken..."
   ]
-}Vær kreativ, personlig og gi tips som virkelig hjelper brukeren å nå målet sitt!`;
+}
+
+VIKTIG: Bruk de FAKTISKE tallene fra treningshistorikken i anbefalingene. Vær spesifikk med kg, reps, og sett.
+Vær kreativ, personlig og gi tips som virkelig hjelper brukeren å nå målet sitt!`;
 
         let parsed;
 
