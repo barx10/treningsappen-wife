@@ -1,6 +1,6 @@
 # 💪 Treningsappen - AI-drevet Treningsdagbok
 
-En moderne Progressive Web App (PWA) for treningstracking med AI-genererte treningsopplegg.
+En moderne Progressive Web App (PWA) for treningstracking med AI-genererte treningsopplegg, anbefalinger og oppsummering av treningsuke. Genereringen benytter data om høyde, vekt, alder og trening som er utført.
 
 ## 📸 Screenshots
 
