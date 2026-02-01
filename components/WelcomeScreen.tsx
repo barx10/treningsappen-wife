@@ -14,7 +14,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onEnter }) => {
             {/* Background Image with Overlay */}
             <div className="absolute inset-0 z-0">
                 <img
-                    src="/cover.png"
+                    src="/cover.png?v=2"
                     alt="Fitness App Cover"
                     className="w-full h-full object-cover opacity-60"
                 />
