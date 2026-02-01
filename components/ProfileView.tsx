@@ -219,10 +219,10 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile, his
     };
 
     const handleClearAllData = () => {
-        if (confirm('⚠️ ADVARSEL: Dette vil slette ALL treningshistorikk, aktive økter og favoritter!\n\nDette kan ikke angres. Er du sikker?')) {
-            if (confirm('Er du HELT sikker? All data vil bli permanent slettet!')) {
+        if (confirm('⚠️ ADVARSEL: Dette vil slette ALL treningshistorikk, aktive økter, favoritter og resette profilen til Rakel!\n\nDette kan ikke angres. Er du sikker?')) {
+            if (confirm('Er du HELT sikker? All data vil bli permanent slettet og profilen blir satt til Rakel!')) {
                 clearAllData();
-                alert('✅ All data er slettet! Siden lastes inn på nytt.');
+                alert('✅ All data er slettet og profilen er resatt til Rakel! Siden lastes inn på nytt.');
                 window.location.reload();
             }
         }
@@ -561,14 +561,14 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile, his
 
                 <div className="border-t border-slate-700 pt-4">
                     <p className="text-xs text-red-400 mb-3">
-                        ⚠️ Faresone: Slett all treningshistorikk permanent
+                        ⚠️ Faresone: Slett all data og resett til Rakel
                     </p>
                     <button
                         onClick={handleClearAllData}
                         className="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-lg font-medium flex items-center justify-center transition-colors"
                     >
                         <Trash2 size={16} className="mr-2" />
-                        Tøm All Data
+                        Tøm Data & Resett til Rakel
                     </button>
                 </div>
             </div>
