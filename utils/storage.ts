@@ -139,3 +139,20 @@ export const saveFavoriteWorkouts = (favorites: FavoriteWorkout[]) => {
     }
 };
 
+/**
+ * Clear all app data from localStorage
+ * This will remove all history, sessions, favorites, but keep profile
+ */
+export const clearAllData = () => {
+    if (!hasStorage()) return;
+    try {
+        window.localStorage.removeItem(STORAGE_KEYS.HISTORY);
+        window.localStorage.removeItem(STORAGE_KEYS.ACTIVE_SESSION);
+        window.localStorage.removeItem(STORAGE_KEYS.FAVORITE_WORKOUTS);
+        // Reset exercises to initial state by removing stored data
+        window.localStorage.removeItem(STORAGE_KEYS.EXERCISES);
+    } catch (error) {
+        console.error('Failed to clear data', error);
+    }
+};
+

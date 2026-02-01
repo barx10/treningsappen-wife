@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { UserProfile, WorkoutSession, ExerciseDefinition, BackupData } from '../types';
-import { User, Target, TrendingUp, Save, Dumbbell, Trophy, Download, Upload, X, Calendar } from 'lucide-react';
+import { User, Target, TrendingUp, Save, Dumbbell, Trophy, Download, Upload, X, Calendar, Trash2 } from 'lucide-react';
 import { getStrengthStandard } from '../utils/fitnessCalculations';
+import { clearAllData } from '../utils/storage';
 import WeeklySummaryView from './WeeklySummaryView';
 
 interface ProfileViewProps {
@@ -27,7 +28,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile, his
         setIsSaving(true);
 
         const updatedProfile: UserProfile = {
-            name: name.trim() || 'Kenneth',
+            name: name.trim() || 'Rakel',
             age: age ? parseInt(age) : undefined,
             weight: weight ? parseFloat(weight) : undefined,
             height: height ? parseInt(height) : undefined,
@@ -215,6 +216,16 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile, his
         };
         reader.readAsText(file);
         event.target.value = '';
+    };
+
+    const handleClearAllData = () => {
+        if (confirm('⚠️ ADVARSEL: Dette vil slette ALL treningshistorikk, aktive økter og favoritter!\n\nDette kan ikke angres. Er du sikker?')) {
+            if (confirm('Er du HELT sikker? All data vil bli permanent slettet!')) {
+                clearAllData();
+                alert('✅ All data er slettet! Siden lastes inn på nytt.');
+                window.location.reload();
+            }
+        }
     };
 
     return (
@@ -546,6 +557,19 @@ const ProfileView: React.FC<ProfileViewProps> = ({ profile, onUpdateProfile, his
                             className="hidden"
                         />
                     </label>
+                </div>
+
+                <div className="border-t border-slate-700 pt-4">
+                    <p className="text-xs text-red-400 mb-3">
+                        ⚠️ Faresone: Slett all treningshistorikk permanent
+                    </p>
+                    <button
+                        onClick={handleClearAllData}
+                        className="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-lg font-medium flex items-center justify-center transition-colors"
+                    >
+                        <Trash2 size={16} className="mr-2" />
+                        Tøm All Data
+                    </button>
                 </div>
             </div>
 
