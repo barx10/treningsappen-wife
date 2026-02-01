@@ -4,7 +4,7 @@ import { STORAGE_KEYS } from './storageKeys';
 const hasStorage = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
 
 export const loadProfile = (): UserProfile => {
-    if (!hasStorage()) return { name: 'Kenneth' };
+    if (!hasStorage()) return { name: 'Rakel' };
     try {
         const stored = window.localStorage.getItem(STORAGE_KEYS.PROFILE);
         if (stored) {
@@ -13,7 +13,7 @@ export const loadProfile = (): UserProfile => {
     } catch (error) {
         console.error('Failed to load profile:', error);
     }
-    return { name: 'Kenneth' }; // Default
+    return { name: 'Rakel' }; // Default
 };
 
 export const saveProfile = (profile: UserProfile): void => {
