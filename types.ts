@@ -69,8 +69,7 @@ export enum Screen {
   ACTIVE_WORKOUT = 'Aktiv Økt',
   EXERCISES = 'Øvelser',
   PROFILE = 'Profil',
-  INFO = 'Info',
-  AGENT = 'AI Agent'
+  INFO = 'Info'
 }
 
 // User Profile

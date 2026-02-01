@@ -1,23 +1,19 @@
-# 💪 Treningsappen - AI-drevet Treningsdagbok
+# 💪 Treningsappen - Din Personlige Treningsdagbok
 
-En moderne Progressive Web App (PWA) for treningstracking med AI-genererte treningsopplegg, anbefalinger og oppsummering av treningsuke. Genereringen benytter data om høyde, vekt, alder og trening som er utført.
+En moderne Progressive Web App (PWA) for treningstracking med detaljert statistikk, anbefalinger og oppsummering av treningsuke.
 
 ## 📸 Screenshots
 
 <details>
 <summary>Klikk for å se skjermbilder</summary>
 
-| Forside | Dashboard | KI-trening |
-|---------|-----------|------------|
-| ![Forside](screenshots/Forside.png) | ![Dashboard](screenshots/Dashboard.png) | ![KI-trening](screenshots/KI-trening.png) |
+| Forside | Dashboard | Profil |
+|---------|-----------|--------|
+| ![Forside](screenshots/Forside.png) | ![Dashboard](screenshots/Dashboard.png) | ![Profil](screenshots/Profil-treningsmål.png) |
 
-| KI-anbefaling | Profil | Ernæring |
-|---------------|--------|----------|
-| ![KI-anbefaling](screenshots/KI-anbefaling.13.png) | ![Profil](screenshots/Profil-treningsmål.png) | ![Ernæring](screenshots/Ernæring.png) |
-
-| Treningsstatistikk | Ernæringsguide | Om appen |
-|--------------------|----------------|----------|
-| ![Treningsstatistikk](screenshots/treningsstatistikk.png) | ![Ernæringsguide](screenshots/Ernæringsguide.png) | ![Om appen](screenshots/Om%20appen.png) |
+| Ernæring | Treningsstatistikk | Om appen |
+|----------|-------------------|----------|
+| ![Ernæring](screenshots/Ernæring.png) | ![Treningsstatistikk](screenshots/treningsstatistikk.png) | ![Om appen](screenshots/Om%20appen.png) |
 
 </details>
 
@@ -25,8 +21,8 @@ En moderne Progressive Web App (PWA) for treningstracking med AI-genererte treni
 
 - 📊 **Treningslogging** - Logg økter med øvelser, sett, reps og vekt
 - 📈 **Fremgangsvisualisering** - Se din utvikling med interaktive grafer
-- 🤖 **AI Trenings-Agent** - Få personlige treningsopplegg generert av AI
-- 💡 **Smarte anbefalinger** - AI-drevne anbefalinger for neste økt
+- 💡 **Smarte anbefalinger** - Lokale anbefalinger basert på treningshistorikk
+- ❤️ **Favorittøkter** - Lagre dine favoritt treningsopplegg for gjenbruk
 - ⏱️ **Innebygget timer** - Automatisk hviletid-tracking mellom sett
 - 📱 **PWA** - Installer på mobil/desktop, fungerer offline
 - 🎨 **Moderne UI** - Dark mode, responsive design
@@ -37,7 +33,6 @@ En moderne Progressive Web App (PWA) for treningstracking med AI-genererte treni
 
 - Node.js (versjon 18 eller nyere)
 - npm eller yarn
-- En Gemini API-nøkkel (gratis tier tilgjengelig)
 
 ### Installasjon
 
@@ -52,26 +47,12 @@ En moderne Progressive Web App (PWA) for treningstracking med AI-genererte treni
    npm install
    ```
 
-3. **Sett opp Gemini API-nøkkel**
-   
-   a. Få en gratis API-nøkkel fra [Google AI Studio](https://aistudio.google.com/apikey)
-   
-   b. Opprett en `.env` fil i prosjektets rotmappe:
-   ```bash
-   cp .env.example .env
-   ```
-   
-   c. Åpne `.env` og legg inn din API-nøkkel:
-   ```
-   GEMINI_API_KEY=din_api_nøkkel_her
-   ```
-
-4. **Start utviklingsserver**
+3. **Start utviklingsserver**
    ```bash
    npm run dev
    ```
 
-5. **Åpne appen i nettleseren**
+4. **Åpne appen i nettleseren**
    ```
    http://localhost:5173
    ```
@@ -93,14 +74,7 @@ Bygget ender opp i `dist/` mappen.
    - Klikk "Add New Project"
    - Import ditt repository
 
-3. **Sett Environment Variables**
-   - Gå til Project Settings → Environment Variables
-   - Legg til:
-     - Name: `GEMINI_API_KEY`
-     - Value: Din Gemini API-nøkkel
-     - Environments: Production, Preview, Development (velg alle)
-
-4. **Deploy**
+3. **Deploy**
    - Vercel vil automatisk bygge og deploye
    - Fremtidige pushes til main-branch vil automatisk deployes
 
@@ -108,11 +82,10 @@ Bygget ender opp i `dist/` mappen.
 
 - **Frontend:** React 19, TypeScript, Vite
 - **Styling:** Tailwind CSS 4
-- **AI:** Google Gemini 2.0 Flash (via @google/genai)
 - **Charts:** Recharts
 - **Icons:** Lucide React
 - **PWA:** vite-plugin-pwa
-- **Deployment:** Vercel (serverless functions)
+- **Deployment:** Vercel
 
 ## 📱 Bruk som PWA
 
@@ -126,31 +99,14 @@ Bygget ender opp i `dist/` mappen.
 2. Klikk på install-ikonet i adressefeltet
 3. Eller: Meny → "Installer [appnavn]"
 
-## 🤖 AI-funksjoner
-
-Appen bruker Google Gemini 2.0 Flash for:
-
-- **Treningsopplegg**: Genererer personlige økter basert på:
-  - Dine mål (styrke, muskelvekst, kondisjon)
-  - Treningshistorikk (unngår overtrening)
-  - Tilgjengelige øvelser i biblioteket
-  
-- **Smarte anbefalinger**: Foreslår neste øvelse basert på muskelgrupper du har trent
-
-### Kostnad
-Gemini 2.0 Flash er **gratis** opp til 1500 requests/dag (15 requests/minutt).  
-[Les mer om prising](https://ai.google.dev/pricing)
-
 ## 📁 Prosjektstruktur
 
 ```
-├── api/
-│   └── generate-workout.js    # Vercel serverless function for AI
 ├── components/
 │   ├── ActiveSessionView.tsx  # Aktiv treningsøkt
-│   ├── AgentView.tsx          # AI-genererte opplegg
 │   ├── ExerciseCard.tsx       # Øvelseskort
 │   ├── ProfileView.tsx        # Brukerprofil og innstillinger
+│   ├── FavoritesModal.tsx     # Favorittøkter
 │   └── ...
 ├── utils/
 │   ├── storage.ts             # LocalStorage handling
@@ -164,7 +120,7 @@ Gemini 2.0 Flash er **gratis** opp til 1500 requests/dag (15 requests/minutt).
 
 - ✅ **All data lagres lokalt** på din enhet (ingen database)
 - ✅ **Ingen brukerkontoer** - ingen registrering, ingen e-post
-- ✅ **AI-funksjoner** sender treningsdata til Google Gemini (kun når du trykker)
+- ✅ **100% privat** - ingen data sendes til eksterne tjenester
 - ✅ **Ingen tracking** - ingen cookies, ingen analytics
 - ✅ **Full kontroll** - eksporter, importer eller slett alt når du vil
 
@@ -180,7 +136,6 @@ Kenneth Bareksten - [Lærerliv](https://www.laererliv.no/)
 
 ## 🙏 Credits
 
-- Google Gemini for AI-funksjonalitet
 - Vercel for hosting
 - React, TypeScript, Tailwind CSS communities
 

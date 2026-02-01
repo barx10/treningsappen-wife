@@ -21,8 +21,6 @@ import {
   saveHistory,
   loadActiveSession,
   saveActiveSession,
-  loadCachedRecommendations,
-  saveCachedRecommendations,
   loadFavoriteWorkouts,
   saveFavoriteWorkouts
 } from './utils/storage';
@@ -43,7 +41,6 @@ import PinGate from './components/PinGate';
 // Lazy load heavy components
 const ProfileView = lazy(() => import('./components/ProfileView'));
 const InfoView = lazy(() => import('./components/InfoView'));
-const AgentView = lazy(() => import('./components/AgentView'));
 const HistoryOverviewChart = lazy(() => import('./components/HistoryOverviewChart'));
 const ExerciseDistributionChart = lazy(() => import('./components/ExerciseDistributionChart'));
 const HistoryCalendar = lazy(() => import('./components/HistoryCalendar'));
@@ -62,9 +59,7 @@ export default function App() {
   const [history, setHistory] = useState<WorkoutSession[]>(loadHistory);
   const [profile, setProfile] = useState<UserProfile>(loadProfile);
   const [favoriteWorkouts, setFavoriteWorkouts] = useState<FavoriteWorkout[]>(loadFavoriteWorkouts);
-  const [aiRecommendations, setAiRecommendations] = useState<string[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [loadingAiRecommendations, setLoadingAiRecommendations] = useState(false);
   const [historySearchQuery, setHistorySearchQuery] = useState('');
   const [historyDateFilter, setHistoryDateFilter] = useState<'all' | 'week' | 'month' | '3months'>('all');
   const [historyDisplayLimit, setHistoryDisplayLimit] = useState(5); // Show 5 at a time
@@ -445,66 +440,6 @@ export default function App() {
                 </div>
               ))}
             </div>
-            {/* AI Recommendations Button */}
-            <button
-              onClick={async () => {
-                setLoadingAiRecommendations(true);
-                try {
-                  // Check cache first
-                  const cachedRecs = loadCachedRecommendations();
-                  if (cachedRecs) {
-                    console.log('Using cached recommendations');
-                    setAiRecommendations(cachedRecs);
-                    setLoadingAiRecommendations(false);
-                    return;
-                  }
-
-                  // No cache, make API call
-                  const response = await fetch('/api/generate-recommendations', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ profile, history, exercises })
-                  });
-                  const data = await response.json();
-                  if (data.recommendations) {
-                    setAiRecommendations(data.recommendations);
-                    saveCachedRecommendations(data.recommendations);
-                  }
-                } catch (error) {
-                  console.error('Failed to get AI recommendations:', error);
-                } finally {
-                  setLoadingAiRecommendations(false);
-                }
-              }}
-              disabled={loadingAiRecommendations}
-              className="mt-4 w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2.5 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              <Lightbulb size={16} />
-              {loadingAiRecommendations ? 'Analyserer...' : '✨ Få dypere AI-analyse'}
-            </button>
-            <p className="text-[10px] text-slate-500 text-center mt-1">
-              🔒 Sender treningsdata til Google Gemini API
-            </p>
-            {/* AI Recommendations Display */}
-            {aiRecommendations.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-purple-500/30 space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
-                <div className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-2 flex items-center gap-1">
-                  <Lightbulb size={14} />
-                  AI-analyse
-                </div>
-                {aiRecommendations.map((rec, idx) => (
-                  <div key={idx} className="p-3 bg-purple-500/10 rounded-lg border border-purple-500/30">
-                    <p className="text-sm text-slate-200 leading-relaxed">{rec}</p>
-                  </div>
-                ))}
-                <button
-                  onClick={() => setAiRecommendations([])}
-                  className="text-xs text-slate-400 hover:text-white underline mt-2"
-                >
-                  Skjul AI-analyse
-                </button>
-              </div>
-            )}
           </section>
         )}
 
@@ -899,17 +834,6 @@ export default function App() {
         {currentScreen === Screen.INFO && (
           <Suspense fallback={<div className="h-full flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
             <InfoView />
-          </Suspense>
-        )}
-        {currentScreen === Screen.AGENT && (
-          <Suspense fallback={<div className="h-full flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
-            <AgentView
-              profile={profile}
-              history={history}
-              exercises={exercises}
-              onStartWorkout={handleStartGeneratedWorkout}
-              onSaveFavorite={handleSaveFavoriteWorkout}
-            />
           </Suspense>
         )}
       </div>
